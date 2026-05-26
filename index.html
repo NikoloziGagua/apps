@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Today" />
 <meta name="theme-color" content="#fafaf7" />
-<link rel="manifest" href='data:application/manifest+json,{"name":"Today","short_name":"Today","start_url":"./","display":"standalone","background_color":"#fafaf7","theme_color":"#fafaf7","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 fill=%22%23fafaf7%22/><text x=%2296%22 y=%22125%22 font-family=%22serif%22 font-size=%22110%22 text-anchor=%22middle%22 fill=%22%23111%22>•</text></svg>","sizes":"192x192","type":"image/svg+xml"}]}' />
 <title>Today</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1174,13 +1173,24 @@
 <!-- Global error catcher -->
 <script>
 window.addEventListener('error', function(e) {
+  // Ignore errors from external resources (fonts, images, extensions)
+  // Only catch errors from our own inline script
+  if (e.filename && !e.filename.startsWith(location.origin) && e.filename !== '') {
+    console.warn('Ignored external error:', e.message, e.filename);
+    return;
+  }
+  // Ignore resource load errors (font 404s etc)
+  if (e.target && e.target !== window) {
+    console.warn('Ignored resource error:', e.target);
+    return;
+  }
   var c = document.getElementById('crashScreen');
   var ce = document.getElementById('crashErr');
   if (c && ce) {
     ce.textContent = (e.message || 'Unknown error') + (e.filename ? '\nat ' + e.filename + ':' + e.lineno : '');
     c.style.display = 'block';
   }
-});
+}, true);
 </script>
 
 <script>
