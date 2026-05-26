@@ -1209,22 +1209,60 @@ const todayKey = () => dateKey();
 let store = (() => {
   try {
     let s = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    // Migrate v1 -> v2 if needed
-    const v1 = localStorage.getItem('today.v1');
-    if (v1 && Object.keys(s).length === 0) {
-      const old = JSON.parse(v1);
-      Object.keys(old).forEach(k => {
-        s[k] = { work: [], life: [], note: '', mood: null };
-        ['work','life'].forEach(sec => {
-          (old[k][sec] || []).forEach(t => {
-            s[k][sec].push({ ...t, id: t.id || Math.random().toString(36).slice(2,9), priority: 'none', tags: [], note: '', timeEst: '', recur: '', subtasks: [] });
-          });
+    // Sanitize: ensure every day has the right shape
+    Object.keys(s).forEach(k => {
+      if (!s[k] || typeof s[k] !== 'object' || Array.isArray(s[k])) {
+        delete s[k];
+        return;
+      }
+      if (!Array.isArray(s[k].work)) s[k].work = [];
+      if (!Array.isArray(s[k].life)) s[k].life = [];
+      if (typeof s[k].note !== 'string') s[k].note = '';
+      // Sanitize tasks
+      ['work','life'].forEach(sec => {
+        s[k][sec] = s[k][sec].filter(t => t && typeof t === 'object' && typeof t.text === 'string');
+        s[k][sec].forEach(t => {
+          if (!t.id) t.id = Math.random().toString(36).slice(2,9);
+          if (typeof t.done !== 'boolean') t.done = false;
+          if (!t.priority) t.priority = 'none';
+          if (!Array.isArray(t.tags)) t.tags = [];
+          if (typeof t.note !== 'string') t.note = '';
+          if (typeof t.timeEst !== 'string') t.timeEst = '';
+          if (typeof t.recur !== 'string') t.recur = '';
+          if (!Array.isArray(t.subtasks)) t.subtasks = [];
         });
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+    });
+    // Migrate v1 -> v2 if v2 is empty
+    const v1 = localStorage.getItem('today.v1');
+    if (v1 && Object.keys(s).length === 0) {
+      try {
+        const old = JSON.parse(v1);
+        Object.keys(old || {}).forEach(k => {
+          if (!old[k] || typeof old[k] !== 'object') return;
+          s[k] = { work: [], life: [], note: '', mood: null };
+          ['work','life'].forEach(sec => {
+            (Array.isArray(old[k][sec]) ? old[k][sec] : []).forEach(t => {
+              if (!t || typeof t.text !== 'string') return;
+              s[k][sec].push({
+                text: t.text,
+                done: !!t.done,
+                id: t.id || Math.random().toString(36).slice(2,9),
+                priority: 'none', tags: [], note: '', timeEst: '', recur: '', subtasks: []
+              });
+            });
+          });
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+      } catch (e) {
+        console.warn('v1 migration failed:', e);
+      }
     }
     return s;
-  } catch { return {}; }
+  } catch (e) {
+    console.warn('Store load failed:', e);
+    return {};
+  }
 })();
 
 let settings = (() => {
@@ -1280,7 +1318,7 @@ const handleRollover = () => {
   }
   let rolled = 0;
   ['work','life'].forEach(sec => {
-    const open = (lastDay[sec] || []).filter(t => !t.done);
+    const open = (lastDay[sec] || []).filter(t => t && !t.done);
     if (open.length) {
       const td = getDay(today);
       open.forEach(t => {
@@ -1288,23 +1326,24 @@ const handleRollover = () => {
         rolled++;
       });
       // Remove from yesterday
-      lastDay[sec] = (lastDay[sec] || []).filter(t => t.done);
+      lastDay[sec] = (lastDay[sec] || []).filter(t => t && t.done);
     }
   });
   // Handle recurring tasks - create instances for today
-  Object.values(store).forEach(d => {});
   // Build set of all recurring task signatures from past days
   const recurSeen = new Set();
   Object.keys(store).sort().forEach(k => {
     if (k >= today) return;
+    const entry = store[k];
+    if (!entry || typeof entry !== 'object') return;
     ['work','life'].forEach(sec => {
-      (store[k][sec] || []).forEach(t => {
-        if (!t.recur || t.recur === '') return;
+      (entry[sec] || []).forEach(t => {
+        if (!t || !t.recur || t.recur === '') return;
         const sig = t.recur + '|' + t.text + '|' + sec;
         if (recurSeen.has(sig)) return;
         recurSeen.add(sig);
         const td = getDay(today);
-        const alreadyExists = td[sec].some(x => x.text === t.text && x.recur === t.recur);
+        const alreadyExists = (td[sec] || []).some(x => x.text === t.text && x.recur === t.recur);
         if (alreadyExists) return;
         const dow = new Date().getDay();
         let include = false;
@@ -2530,10 +2569,15 @@ activeView = tab.dataset.view;
 [‘today’,‘calendar’,‘focus’,‘stats’,‘settings’].forEach(v => {
 document.getElementById(v + ‘View’).style.display = (v === activeView) ? ‘’ : ‘none’;
 });
+try {
 if (activeView === ‘today’) renderToday();
 if (activeView === ‘calendar’) renderCalendar();
 if (activeView === ‘focus’) { updateFocusUI(); renderFocusTaskList(); }
 if (activeView === ‘stats’) renderStats();
+} catch (err) {
+console.error(‘Tab render failed:’, err);
+showToast(‘Something went wrong on that tab’);
+}
 });
 });
 
@@ -2558,10 +2602,16 @@ if (e.key === ‘4’) document.querySelector(’.tab[data-view=“stats”]’)
 });
 
 /* ===== INIT ===== */
+try {
 handleRollover();
 renderHeader();
 renderToday();
 checkBadges();
+} catch (err) {
+console.error(‘Init failed:’, err);
+// Show a visible error + reset option so user isn’t stuck
+document.body.innerHTML = `<div style="padding: 60px 24px; max-width: 480px; margin: 0 auto; font-family: -apple-system, sans-serif; color: #1a1a1a;"> <h2 style="font-family: Fraunces, Georgia, serif; font-size: 26px; margin-bottom: 12px;">Something went wrong</h2> <p style="font-size: 14px; color: #6b6b6b; margin-bottom: 18px; line-height: 1.5;">The app couldn't load your saved data. This usually happens after an update. You can reset and start fresh — your old browser data will be cleared.</p> <pre style="background: #f3f1ea; padding: 12px; border-radius: 6px; font-size: 11px; overflow: auto; margin-bottom: 18px; color: #c1440e;">${String(err.message || err).slice(0, 300)}</pre> <button onclick="localStorage.clear(); location.reload();" style="background: #c1440e; color: white; border: none; padding: 12px 24px; border-radius: 24px; font-size: 13px; cursor: pointer; letter-spacing: .08em; text-transform: uppercase;">Reset and reload</button> <button onclick="location.reload();" style="background: none; border: 1px solid #e7e4dc; color: #6b6b6b; padding: 12px 24px; border-radius: 24px; font-size: 13px; cursor: pointer; letter-spacing: .08em; text-transform: uppercase; margin-left: 8px;">Just reload</button> </div>`;
+}
 
 // Update header at midnight roll
 setInterval(() => {
