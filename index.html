@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -829,7 +828,6 @@
   .filter-chip.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
 </style>
-
 </head>
 <body>
 
@@ -869,11 +867,9 @@
 </nav>
 
 <!-- TODAY -->
-
 <main id="todayView" class="view">
 
   <!-- Search bar (hidden by default) -->
-
   <div class="search-bar" id="searchBar" style="display:none">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
     <input type="text" id="searchInput" placeholder="search all tasks…" />
@@ -881,7 +877,6 @@
   <div class="search-results" id="searchResults" style="display:none"></div>
 
   <!-- Filter chips -->
-
   <div class="filter-row" id="filterRow">
     <button class="filter-chip active" data-filter="all">All</button>
     <button class="filter-chip" data-filter="open">Open</button>
@@ -921,7 +916,6 @@
 </main>
 
 <!-- CALENDAR -->
-
 <main id="calendarView" class="view" style="display:none">
   <div class="cal-header">
     <div class="cal-title">
@@ -952,7 +946,6 @@
 </main>
 
 <!-- FOCUS -->
-
 <main id="focusView" class="view" style="display:none">
   <div class="focus-view">
     <div class="focus-task" id="focusTaskText">— select a task —</div>
@@ -978,7 +971,6 @@
 </main>
 
 <!-- STATS -->
-
 <main id="statsView" class="view" style="display:none">
   <div class="stats-grid">
     <div class="stat-card">
@@ -1042,7 +1034,6 @@
 </main>
 
 <!-- SETTINGS -->
-
 <main id="settingsView" class="view" style="display:none">
   <div class="settings-section">
     <div class="settings-header">Look &amp; feel</div>
@@ -1110,11 +1101,9 @@
 </main>
 
 <!-- FAB -->
-
 <button class="fab" id="fab" aria-label="quick add">+</button>
 
 <!-- Day detail modal -->
-
 <div class="modal-backdrop" id="dayModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1124,7 +1113,6 @@
 </div>
 
 <!-- Edit task modal -->
-
 <div class="modal-backdrop" id="editModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1170,8 +1158,30 @@
 </div>
 
 <!-- Toast -->
-
 <div class="toast" id="toast"></div>
+
+<!-- JS-free escape hatch: hidden by default, shown if script crashes -->
+<div id="crashScreen" style="display:none;position:fixed;inset:0;background:#fafaf7;color:#1a1a1a;padding:60px 24px;z-index:9999;font-family:-apple-system,sans-serif;">
+  <div style="max-width:420px;margin:0 auto;">
+    <h2 style="font-family:Fraunces,Georgia,serif;font-size:26px;margin-bottom:12px;font-weight:400;">Something went wrong</h2>
+    <p style="font-size:14px;color:#6b6b6b;line-height:1.5;margin-bottom:18px;">The app couldn't load. Tap below to reset and start fresh.</p>
+    <pre id="crashErr" style="background:#f3f1ea;padding:12px;border-radius:6px;font-size:11px;overflow:auto;margin-bottom:18px;color:#c1440e;white-space:pre-wrap;word-break:break-word;"></pre>
+    <button onclick="try{localStorage.clear()}catch(e){}location.reload();" style="background:#c1440e;color:white;border:none;padding:14px 24px;border-radius:24px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;width:100%;margin-bottom:8px;">Reset and reload</button>
+    <button onclick="location.reload();" style="background:none;border:1px solid #e7e4dc;color:#6b6b6b;padding:14px 24px;border-radius:24px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;width:100%;">Just reload</button>
+  </div>
+</div>
+
+<!-- Global error catcher -->
+<script>
+window.addEventListener('error', function(e) {
+  var c = document.getElementById('crashScreen');
+  var ce = document.getElementById('crashErr');
+  if (c && ce) {
+    ce.textContent = (e.message || 'Unknown error') + (e.filename ? '\nat ' + e.filename + ':' + e.lineno : '');
+    c.style.display = 'block';
+  }
+});
+</script>
 
 <script>
 /* ===== THEME ===== */
@@ -2114,213 +2124,212 @@ const openDayModal = (key) => {
     <div class="day-note-area">
       <div class="note-label"><span>Reflection</span><span style="color:var(--ink-faint);font-size:9px">saves automatically</span></div>
       <textarea id="dayNoteInput" placeholder="how did the day feel? a thought, a memory, anything…">${(day && day.note) ? day.note.replace(/</g,'&lt;') : ''}</textarea>
+      <div class="mood-row">
+        ${['😄','🙂','😐','😕','😩'].map((e, i) => `<button class="mood-btn ${day && day.mood === i ? 'selected' : ''}" data-mood="${i}">${e}</button>`).join('')}
+      </div>
+    </div>
+  `;
 
-```
-  <div class="mood-row">
-    ${['😄','🙂','😐','😕','😩'].map((e, i) => `<button class="mood-btn ${day && day.mood === i ? 'selected' : ''}" data-mood="${i}">${e}</button>`).join('')}
-  </div>
-</div>
-```
+  if (day && (day.work?.length || day.life?.length)) {
+    ['work','life'].forEach(section => {
+      if (!day[section] || !day[section].length) return;
+      inner += `<div class="modal-group"><div class="modal-group-label">${section}</div>`;
+      day[section].forEach(t => {
+        const safe = document.createElement('span');
+        safe.textContent = t.text;
+        const subInfo = t.subtasks && t.subtasks.length ? ` · ${t.subtasks.filter(s=>s.done).length}/${t.subtasks.length} subs` : '';
+        const noteInfo = t.note ? ` · "${t.note.length > 30 ? t.note.slice(0,30) + '…' : t.note}"` : '';
+        inner += `<div class="modal-task ${t.done ? 'done' : ''}"><span class="mark"></span><span class="label">${safe.innerHTML}<span style="color:var(--ink-faint);font-size:11px">${subInfo}${noteInfo}</span></span></div>`;
+      });
+      inner += `</div>`;
+    });
+  } else if (!isToday) {
+    inner += `<div class="modal-empty">— a quiet day —</div>`;
+  }
 
-`;
+  body.innerHTML = inner;
 
-if (day && (day.work?.length || day.life?.length)) {
-[‘work’,‘life’].forEach(section => {
-if (!day[section] || !day[section].length) return;
-inner += `<div class="modal-group"><div class="modal-group-label">${section}</div>`;
-day[section].forEach(t => {
-const safe = document.createElement(‘span’);
-safe.textContent = t.text;
-const subInfo = t.subtasks && t.subtasks.length ? ` · ${t.subtasks.filter(s=>s.done).length}/${t.subtasks.length} subs` : ‘’;
-const noteInfo = t.note ? ` · "${t.note.length > 30 ? t.note.slice(0,30) + '…' : t.note}"` : ‘’;
-inner += `<div class="modal-task ${t.done ? 'done' : ''}"><span class="mark"></span><span class="label">${safe.innerHTML}<span style="color:var(--ink-faint);font-size:11px">${subInfo}${noteInfo}</span></span></div>`;
-});
-inner += `</div>`;
-});
-} else if (!isToday) {
-inner += `<div class="modal-empty">— a quiet day —</div>`;
-}
+  // Wire up note + mood
+  const noteInput = body.querySelector('#dayNoteInput');
+  if (noteInput) {
+    const targetDay = getDay(key);
+    let noteTimer;
+    noteInput.addEventListener('input', () => {
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(() => {
+        targetDay.note = noteInput.value;
+        save();
+      }, 400);
+    });
+  }
+  body.querySelectorAll('.mood-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      const targetDay = getDay(key);
+      const m = parseInt(b.dataset.mood);
+      if (targetDay.mood === m) {
+        targetDay.mood = null;
+        b.classList.remove('selected');
+      } else {
+        body.querySelectorAll('.mood-btn').forEach(x => x.classList.remove('selected'));
+        targetDay.mood = m;
+        b.classList.add('selected');
+      }
+      save();
+    });
+  });
 
-body.innerHTML = inner;
-
-// Wire up note + mood
-const noteInput = body.querySelector(’#dayNoteInput’);
-if (noteInput) {
-const targetDay = getDay(key);
-let noteTimer;
-noteInput.addEventListener(‘input’, () => {
-clearTimeout(noteTimer);
-noteTimer = setTimeout(() => {
-targetDay.note = noteInput.value;
-save();
-}, 400);
-});
-}
-body.querySelectorAll(’.mood-btn’).forEach(b => {
-b.addEventListener(‘click’, () => {
-const targetDay = getDay(key);
-const m = parseInt(b.dataset.mood);
-if (targetDay.mood === m) {
-targetDay.mood = null;
-b.classList.remove(‘selected’);
-} else {
-body.querySelectorAll(’.mood-btn’).forEach(x => x.classList.remove(‘selected’));
-targetDay.mood = m;
-b.classList.add(‘selected’);
-}
-save();
-});
-});
-
-document.getElementById(‘dayModal’).classList.add(‘open’);
+  document.getElementById('dayModal').classList.add('open');
 };
 
-document.getElementById(‘dayModalClose’).addEventListener(‘click’, () => {
-document.getElementById(‘dayModal’).classList.remove(‘open’);
-if (document.querySelector(‘main:not([style*=“display:none”])’).id === ‘calendarView’) renderCalendar();
+document.getElementById('dayModalClose').addEventListener('click', () => {
+  document.getElementById('dayModal').classList.remove('open');
+  if (document.querySelector('main:not([style*="display:none"])').id === 'calendarView') renderCalendar();
 });
-document.getElementById(‘dayModal’).addEventListener(‘click’, e => {
-if (e.target.id === ‘dayModal’) {
-document.getElementById(‘dayModal’).classList.remove(‘open’);
-if (document.querySelector(‘main:not([style*=“display:none”])’).id === ‘calendarView’) renderCalendar();
-}
+document.getElementById('dayModal').addEventListener('click', e => {
+  if (e.target.id === 'dayModal') {
+    document.getElementById('dayModal').classList.remove('open');
+    if (document.querySelector('main:not([style*="display:none"])').id === 'calendarView') renderCalendar();
+  }
 });
 
 /* ===== STATS ===== */
 const renderStats = () => {
-const allKeys = Object.keys(store).sort();
-let totalDone = 0, workDone = 0, lifeDone = 0;
-const weekdayTotals = [0,0,0,0,0,0,0];
-allKeys.forEach(k => {
-const d = store[k];
-const dow = parseKey(k).getDay();
-(d.work || []).forEach(t => { if (t.done) { totalDone++; workDone++; weekdayTotals[dow]++; } });
-(d.life || []).forEach(t => { if (t.done) { totalDone++; lifeDone++; weekdayTotals[dow]++; } });
-});
+  const allKeys = Object.keys(store).sort();
+  let totalDone = 0, workDone = 0, lifeDone = 0;
+  const weekdayTotals = [0,0,0,0,0,0,0];
+  allKeys.forEach(k => {
+    const d = store[k];
+    const dow = parseKey(k).getDay();
+    (d.work || []).forEach(t => { if (t.done) { totalDone++; workDone++; weekdayTotals[dow]++; } });
+    (d.life || []).forEach(t => { if (t.done) { totalDone++; lifeDone++; weekdayTotals[dow]++; } });
+  });
 
-const streak = calcStreak();
-let bestStreak = streak;
-if (allKeys.length) {
-let cur = parseKey(allKeys[0]);
-const end = parseKey(allKeys[allKeys.length - 1]);
-let run = 0;
-while (cur <= end) {
-const k = dateKey(cur);
-if (isStreakDay(k)) { run++; if (run > bestStreak) bestStreak = run; }
-else { const d = store[k]; if (d && ((d.work||[]).length + (d.life||[]).length) > 0) run = 0; }
-cur.setDate(cur.getDate() + 1);
-}
-}
+  const streak = calcStreak();
+  let bestStreak = streak;
+  if (allKeys.length) {
+    let cur = parseKey(allKeys[0]);
+    const end = parseKey(allKeys[allKeys.length - 1]);
+    let run = 0;
+    while (cur <= end) {
+      const k = dateKey(cur);
+      if (isStreakDay(k)) { run++; if (run > bestStreak) bestStreak = run; }
+      else { const d = store[k]; if (d && ((d.work||[]).length + (d.life||[]).length) > 0) run = 0; }
+      cur.setDate(cur.getDate() + 1);
+    }
+  }
 
-let s30Total = 0, s30Done = 0;
-for (let i = 0; i < 30; i++) {
-const d = new Date(); d.setDate(d.getDate() - i);
-const s = dayStats(dateKey(d));
-s30Total += s.total; s30Done += s.done;
-}
-const pct30 = s30Total ? Math.round((s30Done / s30Total) * 100) : 0;
+  let s30Total = 0, s30Done = 0;
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const s = dayStats(dateKey(d));
+    s30Total += s.total; s30Done += s.done;
+  }
+  const pct30 = s30Total ? Math.round((s30Done / s30Total) * 100) : 0;
 
-document.getElementById(‘statStreak’).textContent = streak;
-document.getElementById(‘statStreakSub’).textContent =
-streak === 0 ? ‘start today’ : streak === 1 ? ‘a beginning’ : streak < 7 ? ‘keep going’ : streak < 30 ? ‘on a roll’ : ‘remarkable’;
-document.getElementById(‘statBestStreak’).innerHTML = `${bestStreak}<span class="unit">days</span>`;
-document.getElementById(‘statTotalDone’).textContent = totalDone;
-document.getElementById(‘statCompletion’).innerHTML = `${pct30}<span class="unit">%</span>`;
+  document.getElementById('statStreak').textContent = streak;
+  document.getElementById('statStreakSub').textContent =
+    streak === 0 ? 'start today' : streak === 1 ? 'a beginning' : streak < 7 ? 'keep going' : streak < 30 ? 'on a roll' : 'remarkable';
+  document.getElementById('statBestStreak').innerHTML = `${bestStreak}<span class="unit">days</span>`;
+  document.getElementById('statTotalDone').textContent = totalDone;
+  document.getElementById('statCompletion').innerHTML = `${pct30}<span class="unit">%</span>`;
 
-// Best day of week
-const wdNames = [‘Sun’,‘Mon’,‘Tue’,‘Wed’,‘Thu’,‘Fri’,‘Sat’];
-const best = weekdayTotals.indexOf(Math.max(…weekdayTotals));
-document.getElementById(‘statBestDay’).textContent = weekdayTotals.some(v => v > 0) ? wdNames[best] : ‘—’;
-document.getElementById(‘statBestDaySub’).textContent = weekdayTotals.some(v => v > 0) ? `${weekdayTotals[best]} tasks completed` : ‘most productive weekday’;
+  // Best day of week
+  const wdNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const best = weekdayTotals.indexOf(Math.max(...weekdayTotals));
+  document.getElementById('statBestDay').textContent = weekdayTotals.some(v => v > 0) ? wdNames[best] : '—';
+  document.getElementById('statBestDaySub').textContent = weekdayTotals.some(v => v > 0) ? `${weekdayTotals[best]} tasks completed` : 'most productive weekday';
 
-// Focus hours
-const focusHrs = (focusData.totalSeconds / 3600).toFixed(1);
-document.getElementById(‘statFocus’).innerHTML = `${focusHrs}<span class="unit">hrs</span>`;
+  // Focus hours
+  const focusHrs = (focusData.totalSeconds / 3600).toFixed(1);
+  document.getElementById('statFocus').innerHTML = `${focusHrs}<span class="unit">hrs</span>`;
 
-// Chart
-const bars = document.getElementById(‘chartBars’);
-bars.innerHTML = ‘’;
-for (let i = 13; i >= 0; i–) {
-const d = new Date(); d.setDate(d.getDate() - i);
-const k = dateKey(d);
-const s = dayStats(k);
-const label = d.toLocaleDateString(undefined, { weekday: ‘narrow’ });
-const isToday = k === todayKey();
-let barClass = ‘’;
-if (s.total > 0) barClass += ’ has-data’;
-if (s.total > 0 && s.done === s.total) barClass += ’ full’;
-if (isToday) barClass += ’ today’;
-const heightPct = s.total > 0 ? Math.max(8, s.ratio * 100) : 4;
-const wrap = document.createElement(‘div’);
-wrap.className = ‘chart-bar-wrap’;
-wrap.innerHTML = `<div class="chart-flex-wrap"><div class="chart-bar${barClass}" style="height:${heightPct}%;animation-delay:${(13-i)*40}ms"></div></div> <div class="chart-label">${label}</div>`;
-wrap.addEventListener(‘click’, () => openDayModal(k));
-bars.appendChild(wrap);
-}
+  // Chart
+  const bars = document.getElementById('chartBars');
+  bars.innerHTML = '';
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const k = dateKey(d);
+    const s = dayStats(k);
+    const label = d.toLocaleDateString(undefined, { weekday: 'narrow' });
+    const isToday = k === todayKey();
+    let barClass = '';
+    if (s.total > 0) barClass += ' has-data';
+    if (s.total > 0 && s.done === s.total) barClass += ' full';
+    if (isToday) barClass += ' today';
+    const heightPct = s.total > 0 ? Math.max(8, s.ratio * 100) : 4;
+    const wrap = document.createElement('div');
+    wrap.className = 'chart-bar-wrap';
+    wrap.innerHTML = `
+      <div class="chart-flex-wrap"><div class="chart-bar${barClass}" style="height:${heightPct}%;animation-delay:${(13-i)*40}ms"></div></div>
+      <div class="chart-label">${label}</div>
+    `;
+    wrap.addEventListener('click', () => openDayModal(k));
+    bars.appendChild(wrap);
+  }
 
-const maxWL = Math.max(workDone, lifeDone, 1);
-document.getElementById(‘barWork’).style.setProperty(’–w’, workDone / maxWL);
-document.getElementById(‘barLife’).style.setProperty(’–w’, lifeDone / maxWL);
-document.getElementById(‘valWork’).textContent = workDone;
-document.getElementById(‘valLife’).textContent = lifeDone;
+  const maxWL = Math.max(workDone, lifeDone, 1);
+  document.getElementById('barWork').style.setProperty('--w', workDone / maxWL);
+  document.getElementById('barLife').style.setProperty('--w', lifeDone / maxWL);
+  document.getElementById('valWork').textContent = workDone;
+  document.getElementById('valLife').textContent = lifeDone;
 
-renderBadges();
+  renderBadges();
 };
 
 /* ===== BADGES ===== */
 const BADGE_DEFS = [
-{ id: ‘first’, icon: ‘🌱’, name: ‘First step’, check: () => totalDoneAll() >= 1 },
-{ id: ‘ten’, icon: ‘🔟’, name: ‘Ten down’, check: () => totalDoneAll() >= 10 },
-{ id: ‘fifty’, icon: ‘⭐’, name: ‘Fifty mark’, check: () => totalDoneAll() >= 50 },
-{ id: ‘hundred’, icon: ‘💯’, name: ‘A hundred’, check: () => totalDoneAll() >= 100 },
-{ id: ‘streak3’, icon: ‘🔥’, name: ‘3-day fire’, check: () => calcStreak() >= 3 },
-{ id: ‘streak7’, icon: ‘⚡’, name: ‘Week streak’, check: () => calcStreak() >= 7 },
-{ id: ‘streak30’, icon: ‘🏆’, name: ‘Monthly’, check: () => calcStreak() >= 30 },
-{ id: ‘allDone’, icon: ‘✨’, name: ‘Cleared a day’, check: () => { return Object.keys(store).some(k => { const s = dayStats(k); return s.total > 0 && s.done === s.total; }); } },
-{ id: ‘planner’, icon: ‘📋’, name: ‘Planner’, check: () => { return Object.values(store).some(d => ((d.work||[]).length + (d.life||[]).length) >= 8); } },
-{ id: ‘reflective’, icon: ‘📝’, name: ‘Reflective’, check: () => Object.values(store).filter(d => d.note && d.note.length > 10).length >= 5 },
-{ id: ‘focused’, icon: ‘🎯’, name: ‘Focused’, check: () => (focusData.sessions || []).length >= 5 },
-{ id: ‘deepwork’, icon: ‘🧠’, name: ‘Deep work’, check: () => focusData.totalSeconds >= 3600 * 5 },
+  { id: 'first', icon: '🌱', name: 'First step', check: () => totalDoneAll() >= 1 },
+  { id: 'ten', icon: '🔟', name: 'Ten down', check: () => totalDoneAll() >= 10 },
+  { id: 'fifty', icon: '⭐', name: 'Fifty mark', check: () => totalDoneAll() >= 50 },
+  { id: 'hundred', icon: '💯', name: 'A hundred', check: () => totalDoneAll() >= 100 },
+  { id: 'streak3', icon: '🔥', name: '3-day fire', check: () => calcStreak() >= 3 },
+  { id: 'streak7', icon: '⚡', name: 'Week streak', check: () => calcStreak() >= 7 },
+  { id: 'streak30', icon: '🏆', name: 'Monthly', check: () => calcStreak() >= 30 },
+  { id: 'allDone', icon: '✨', name: 'Cleared a day', check: () => { return Object.keys(store).some(k => { const s = dayStats(k); return s.total > 0 && s.done === s.total; }); } },
+  { id: 'planner', icon: '📋', name: 'Planner', check: () => { return Object.values(store).some(d => ((d.work||[]).length + (d.life||[]).length) >= 8); } },
+  { id: 'reflective', icon: '📝', name: 'Reflective', check: () => Object.values(store).filter(d => d.note && d.note.length > 10).length >= 5 },
+  { id: 'focused', icon: '🎯', name: 'Focused', check: () => (focusData.sessions || []).length >= 5 },
+  { id: 'deepwork', icon: '🧠', name: 'Deep work', check: () => focusData.totalSeconds >= 3600 * 5 },
 ];
 const totalDoneAll = () => {
-let n = 0;
-Object.values(store).forEach(d => {
-(d.work||[]).forEach(t => { if (t.done) n++; });
-(d.life||[]).forEach(t => { if (t.done) n++; });
-});
-return n;
+  let n = 0;
+  Object.values(store).forEach(d => {
+    (d.work||[]).forEach(t => { if (t.done) n++; });
+    (d.life||[]).forEach(t => { if (t.done) n++; });
+  });
+  return n;
 };
 const checkBadges = () => {
-let newly = [];
-BADGE_DEFS.forEach(def => {
-if (!badges[def.id] && def.check()) {
-badges[def.id] = Date.now();
-newly.push(def);
-}
-});
-if (newly.length) {
-saveBadges();
-setTimeout(() => {
-newly.forEach((b, i) => {
-setTimeout(() => showToast(`${b.icon} Achievement: ${b.name}`), i * 800);
-});
-}, 800);
-}
+  let newly = [];
+  BADGE_DEFS.forEach(def => {
+    if (!badges[def.id] && def.check()) {
+      badges[def.id] = Date.now();
+      newly.push(def);
+    }
+  });
+  if (newly.length) {
+    saveBadges();
+    setTimeout(() => {
+      newly.forEach((b, i) => {
+        setTimeout(() => showToast(`${b.icon} Achievement: ${b.name}`), i * 800);
+      });
+    }, 800);
+  }
 };
 const renderBadges = () => {
-const grid = document.getElementById(‘badgesGrid’);
-grid.innerHTML = ‘’;
-let unlocked = 0;
-BADGE_DEFS.forEach(def => {
-const isUnlocked = !!badges[def.id];
-if (isUnlocked) unlocked++;
-const el = document.createElement(‘div’);
-el.className = ’badge ’ + (isUnlocked ? ‘unlocked’ : ‘locked’);
-el.innerHTML = `<div class="b-icon">${def.icon}</div><div class="b-name">${def.name}</div>`;
-el.title = isUnlocked ? `Unlocked: ${new Date(badges[def.id]).toLocaleDateString()}` : ‘Locked’;
-grid.appendChild(el);
-});
-document.getElementById(‘badgeCount’).textContent = `${unlocked} / ${BADGE_DEFS.length}`;
+  const grid = document.getElementById('badgesGrid');
+  grid.innerHTML = '';
+  let unlocked = 0;
+  BADGE_DEFS.forEach(def => {
+    const isUnlocked = !!badges[def.id];
+    if (isUnlocked) unlocked++;
+    const el = document.createElement('div');
+    el.className = 'badge ' + (isUnlocked ? 'unlocked' : 'locked');
+    el.innerHTML = `<div class="b-icon">${def.icon}</div><div class="b-name">${def.name}</div>`;
+    el.title = isUnlocked ? `Unlocked: ${new Date(badges[def.id]).toLocaleDateString()}` : 'Locked';
+    grid.appendChild(el);
+  });
+  document.getElementById('badgeCount').textContent = `${unlocked} / ${BADGE_DEFS.length}`;
 };
 
 /* ===== FOCUS / POMODORO ===== */
@@ -2328,303 +2337,310 @@ const FOCUS_LEN = 25 * 60;
 const BREAK_LEN = 5 * 60;
 let focusTimerInterval = null;
 let focusRemaining = FOCUS_LEN;
-let focusMode = ‘focus’; // ‘focus’ | ‘break’
+let focusMode = 'focus'; // 'focus' | 'break'
 let focusRunning = false;
 let focusSelectedTaskId = null;
 
 const fmtTime = (s) => `${pad(Math.floor(s/60))}:${pad(s%60)}`;
 
 const updateFocusUI = () => {
-document.getElementById(‘focusTimer’).textContent = fmtTime(focusRemaining);
-document.getElementById(‘focusModeLabel’).textContent = focusMode === ‘focus’ ? ‘Focus’ : ‘Break’;
-document.getElementById(‘focusModeLabel’).className = ‘focus-mode-label ’ + (focusMode === ‘break’ ? ‘break’ : ‘’);
-document.getElementById(‘focusStartBtn’).textContent = focusRunning ? ‘Pause’ : ‘Start’;
-const total = focusMode === ‘focus’ ? FOCUS_LEN : BREAK_LEN;
-document.getElementById(‘focusProgressEl’).style.setProperty(’–p’, (total - focusRemaining) / total);
+  document.getElementById('focusTimer').textContent = fmtTime(focusRemaining);
+  document.getElementById('focusModeLabel').textContent = focusMode === 'focus' ? 'Focus' : 'Break';
+  document.getElementById('focusModeLabel').className = 'focus-mode-label ' + (focusMode === 'break' ? 'break' : '');
+  document.getElementById('focusStartBtn').textContent = focusRunning ? 'Pause' : 'Start';
+  const total = focusMode === 'focus' ? FOCUS_LEN : BREAK_LEN;
+  document.getElementById('focusProgressEl').style.setProperty('--p', (total - focusRemaining) / total);
 
-// Stats
-const today = todayKey();
-const todaySessions = (focusData.sessions || []).filter(s => s.date === today);
-document.getElementById(‘focusSessionsToday’).textContent = todaySessions.length;
-document.getElementById(‘focusMinutesToday’).textContent = Math.round(todaySessions.reduce((s, x) => s + x.seconds, 0) / 60);
-document.getElementById(‘focusSessionsAll’).textContent = (focusData.sessions || []).length;
+  // Stats
+  const today = todayKey();
+  const todaySessions = (focusData.sessions || []).filter(s => s.date === today);
+  document.getElementById('focusSessionsToday').textContent = todaySessions.length;
+  document.getElementById('focusMinutesToday').textContent = Math.round(todaySessions.reduce((s, x) => s + x.seconds, 0) / 60);
+  document.getElementById('focusSessionsAll').textContent = (focusData.sessions || []).length;
 
-// Selected task display
-const day = getDay();
-const allOpen = […(day.work||[]), …(day.life||[])].filter(t => !t.done);
-const sel = allOpen.find(t => t.id === focusSelectedTaskId);
-document.getElementById(‘focusTaskText’).textContent = sel ? sel.text : ‘— select a task —’;
+  // Selected task display
+  const day = getDay();
+  const allOpen = [...(day.work||[]), ...(day.life||[])].filter(t => !t.done);
+  const sel = allOpen.find(t => t.id === focusSelectedTaskId);
+  document.getElementById('focusTaskText').textContent = sel ? sel.text : '— select a task —';
 };
 
 const focusTick = () => {
-if (focusRemaining > 0) {
-focusRemaining–;
-updateFocusUI();
-} else {
-// Session ends
-focusRunning = false;
-clearInterval(focusTimerInterval);
-focusTimerInterval = null;
-if (focusMode === ‘focus’) {
-// Record session
-const session = { date: todayKey(), seconds: FOCUS_LEN, taskId: focusSelectedTaskId, ts: Date.now() };
-focusData.sessions.push(session);
-focusData.totalSeconds += FOCUS_LEN;
-saveFocus();
-playTone(880, 0.2, ‘sine’);
-setTimeout(() => playTone(660, 0.2, ‘sine’), 250);
-showToast(‘Focus session complete — take a break’);
-focusMode = ‘break’;
-focusRemaining = BREAK_LEN;
-checkBadges();
-} else {
-playTone(660, 0.15, ‘sine’);
-showToast(‘Break over — back to it?’);
-focusMode = ‘focus’;
-focusRemaining = FOCUS_LEN;
-}
-updateFocusUI();
-}
+  if (focusRemaining > 0) {
+    focusRemaining--;
+    updateFocusUI();
+  } else {
+    // Session ends
+    focusRunning = false;
+    clearInterval(focusTimerInterval);
+    focusTimerInterval = null;
+    if (focusMode === 'focus') {
+      // Record session
+      const session = { date: todayKey(), seconds: FOCUS_LEN, taskId: focusSelectedTaskId, ts: Date.now() };
+      focusData.sessions.push(session);
+      focusData.totalSeconds += FOCUS_LEN;
+      saveFocus();
+      playTone(880, 0.2, 'sine');
+      setTimeout(() => playTone(660, 0.2, 'sine'), 250);
+      showToast('Focus session complete — take a break');
+      focusMode = 'break';
+      focusRemaining = BREAK_LEN;
+      checkBadges();
+    } else {
+      playTone(660, 0.15, 'sine');
+      showToast('Break over — back to it?');
+      focusMode = 'focus';
+      focusRemaining = FOCUS_LEN;
+    }
+    updateFocusUI();
+  }
 };
 
-document.getElementById(‘focusStartBtn’).addEventListener(‘click’, () => {
-if (focusRunning) {
-focusRunning = false;
-clearInterval(focusTimerInterval);
-focusTimerInterval = null;
-} else {
-focusRunning = true;
-focusTimerInterval = setInterval(focusTick, 1000);
-if (audioCtx === undefined && settings.sounds) {
-try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
-}
-}
-updateFocusUI();
+document.getElementById('focusStartBtn').addEventListener('click', () => {
+  if (focusRunning) {
+    focusRunning = false;
+    clearInterval(focusTimerInterval);
+    focusTimerInterval = null;
+  } else {
+    focusRunning = true;
+    focusTimerInterval = setInterval(focusTick, 1000);
+    if (audioCtx === undefined && settings.sounds) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    }
+  }
+  updateFocusUI();
 });
-document.getElementById(‘focusResetBtn’).addEventListener(‘click’, () => {
-focusRunning = false;
-clearInterval(focusTimerInterval);
-focusTimerInterval = null;
-focusRemaining = focusMode === ‘focus’ ? FOCUS_LEN : BREAK_LEN;
-updateFocusUI();
+document.getElementById('focusResetBtn').addEventListener('click', () => {
+  focusRunning = false;
+  clearInterval(focusTimerInterval);
+  focusTimerInterval = null;
+  focusRemaining = focusMode === 'focus' ? FOCUS_LEN : BREAK_LEN;
+  updateFocusUI();
 });
-document.getElementById(‘focusSkipBtn’).addEventListener(‘click’, () => {
-focusRunning = false;
-clearInterval(focusTimerInterval);
-focusTimerInterval = null;
-focusMode = focusMode === ‘focus’ ? ‘break’ : ‘focus’;
-focusRemaining = focusMode === ‘focus’ ? FOCUS_LEN : BREAK_LEN;
-updateFocusUI();
+document.getElementById('focusSkipBtn').addEventListener('click', () => {
+  focusRunning = false;
+  clearInterval(focusTimerInterval);
+  focusTimerInterval = null;
+  focusMode = focusMode === 'focus' ? 'break' : 'focus';
+  focusRemaining = focusMode === 'focus' ? FOCUS_LEN : BREAK_LEN;
+  updateFocusUI();
 });
 
 const renderFocusTaskList = () => {
-const day = getDay();
-const allOpen = […(day.work||[]).map(t => ({…t, _sec: ‘work’})), …(day.life||[]).map(t => ({…t, _sec: ‘life’}))].filter(t => !t.done);
-const wrap = document.getElementById(‘focusTaskList’);
-wrap.innerHTML = ‘’;
-if (!allOpen.length) {
-wrap.innerHTML = ‘<div class="empty" style="padding:30px 0">all done, nothing to focus on</div>’;
-return;
-}
-allOpen.forEach(t => {
-const div = document.createElement(‘div’);
-div.className = ‘focus-pick-item’ + (focusSelectedTaskId === t.id ? ’ selected’ : ‘’);
-div.innerHTML = `<span style="font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.1em">${t._sec}</span> ${t.text}`;
-div.addEventListener(‘click’, () => {
-focusSelectedTaskId = focusSelectedTaskId === t.id ? null : t.id;
-renderFocusTaskList();
-updateFocusUI();
-});
-wrap.appendChild(div);
-});
+  const day = getDay();
+  const allOpen = [...(day.work||[]).map(t => ({...t, _sec: 'work'})), ...(day.life||[]).map(t => ({...t, _sec: 'life'}))].filter(t => !t.done);
+  const wrap = document.getElementById('focusTaskList');
+  wrap.innerHTML = '';
+  if (!allOpen.length) {
+    wrap.innerHTML = '<div class="empty" style="padding:30px 0">all done, nothing to focus on</div>';
+    return;
+  }
+  allOpen.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'focus-pick-item' + (focusSelectedTaskId === t.id ? ' selected' : '');
+    div.innerHTML = `<span style="font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.1em">${t._sec}</span> ${t.text}`;
+    div.addEventListener('click', () => {
+      focusSelectedTaskId = focusSelectedTaskId === t.id ? null : t.id;
+      renderFocusTaskList();
+      updateFocusUI();
+    });
+    wrap.appendChild(div);
+  });
 };
 
 /* ===== SEARCH ===== */
-document.getElementById(‘searchBtn’).addEventListener(‘click’, () => {
-const bar = document.getElementById(‘searchBar’);
-const results = document.getElementById(‘searchResults’);
-const visible = bar.style.display !== ‘none’;
-if (visible) {
-bar.style.display = ‘none’;
-results.style.display = ‘none’;
-document.getElementById(‘searchInput’).value = ‘’;
-} else {
-bar.style.display = ‘’;
-document.getElementById(‘searchInput’).focus();
-}
+document.getElementById('searchBtn').addEventListener('click', () => {
+  const bar = document.getElementById('searchBar');
+  const results = document.getElementById('searchResults');
+  const visible = bar.style.display !== 'none';
+  if (visible) {
+    bar.style.display = 'none';
+    results.style.display = 'none';
+    document.getElementById('searchInput').value = '';
+  } else {
+    bar.style.display = '';
+    document.getElementById('searchInput').focus();
+  }
 });
-document.getElementById(‘searchInput’).addEventListener(‘input’, e => {
-const q = e.target.value.trim().toLowerCase();
-const results = document.getElementById(‘searchResults’);
-if (!q) {
-results.style.display = ‘none’;
-return;
-}
-results.style.display = ‘’;
-results.innerHTML = ‘’;
-const hits = [];
-Object.keys(store).sort((a,b) => b.localeCompare(a)).forEach(k => {
-[‘work’,‘life’].forEach(sec => {
-(store[k][sec] || []).forEach(t => {
-if (t.text.toLowerCase().includes(q) || (t.note && t.note.toLowerCase().includes(q)) || (t.tags && t.tags.some(tag => tag.toLowerCase().includes(q)))) {
-hits.push({ key: k, task: t, section: sec });
-}
-});
-});
-});
-if (!hits.length) {
-results.innerHTML = ‘<div class="empty">no matches</div>’;
-return;
-}
-hits.slice(0, 30).forEach(h => {
-const d = parseKey(h.key);
-const dateLabel = d.toLocaleDateString(undefined, { month: ‘short’, day: ‘numeric’, year: ‘numeric’ });
-const safe = document.createElement(‘span’);
-safe.textContent = h.task.text;
-const highlighted = safe.innerHTML.replace(new RegExp(q.replace(/[.*+?^${}()|[]\]/g,’\$&’), ‘gi’), m => `<mark>${m}</mark>`);
-const div = document.createElement(‘div’);
-div.className = ‘search-result’ + (h.task.done ? ’ done’ : ‘’);
-div.innerHTML = `<div class="search-result-date">${dateLabel} · ${h.section}</div><div class="search-result-text">${highlighted}</div>`;
-div.addEventListener(‘click’, () => openDayModal(h.key));
-results.appendChild(div);
-});
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  const results = document.getElementById('searchResults');
+  if (!q) {
+    results.style.display = 'none';
+    return;
+  }
+  results.style.display = '';
+  results.innerHTML = '';
+  const hits = [];
+  Object.keys(store).sort((a,b) => b.localeCompare(a)).forEach(k => {
+    ['work','life'].forEach(sec => {
+      (store[k][sec] || []).forEach(t => {
+        if (t.text.toLowerCase().includes(q) || (t.note && t.note.toLowerCase().includes(q)) || (t.tags && t.tags.some(tag => tag.toLowerCase().includes(q)))) {
+          hits.push({ key: k, task: t, section: sec });
+        }
+      });
+    });
+  });
+  if (!hits.length) {
+    results.innerHTML = '<div class="empty">no matches</div>';
+    return;
+  }
+  hits.slice(0, 30).forEach(h => {
+    const d = parseKey(h.key);
+    const dateLabel = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    const safe = document.createElement('span');
+    safe.textContent = h.task.text;
+    const highlighted = safe.innerHTML.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi'), m => `<mark>${m}</mark>`);
+    const div = document.createElement('div');
+    div.className = 'search-result' + (h.task.done ? ' done' : '');
+    div.innerHTML = `<div class="search-result-date">${dateLabel} · ${h.section}</div><div class="search-result-text">${highlighted}</div>`;
+    div.addEventListener('click', () => openDayModal(h.key));
+    results.appendChild(div);
+  });
 });
 
 /* ===== SETTINGS ===== */
-document.querySelectorAll(’.toggle-switch’).forEach(el => {
-const setting = el.dataset.setting;
-if (settings[setting]) el.classList.add(‘on’); else el.classList.remove(‘on’);
-el.addEventListener(‘click’, () => {
-settings[setting] = !settings[setting];
-el.classList.toggle(‘on’);
-saveSettings();
-renderHeader();
-});
-});
-
-document.getElementById(‘exportBtn’).addEventListener(‘click’, () => {
-const data = { version: 2, store, settings, focusData, badges, exportedAt: new Date().toISOString() };
-const blob = new Blob([JSON.stringify(data, null, 2)], { type: ‘application/json’ });
-const url = URL.createObjectURL(blob);
-const a = document.createElement(‘a’);
-a.href = url; a.download = `today-backup-${todayKey()}.json`; a.click();
-URL.revokeObjectURL(url);
-showToast(‘Backup downloaded’);
+document.querySelectorAll('.toggle-switch').forEach(el => {
+  const setting = el.dataset.setting;
+  if (settings[setting]) el.classList.add('on'); else el.classList.remove('on');
+  el.addEventListener('click', () => {
+    settings[setting] = !settings[setting];
+    el.classList.toggle('on');
+    saveSettings();
+    renderHeader();
+  });
 });
 
-document.getElementById(‘exportCsvBtn’).addEventListener(‘click’, () => {
-let csv = ‘date,section,task,done,priority,timeEst,due,tags,note\n’;
-Object.keys(store).sort().forEach(k => {
-[‘work’,‘life’].forEach(sec => {
-(store[k][sec] || []).forEach(t => {
-const escape = v => `"${String(v || '').replace(/"/g,'""')}"`;
-csv += [k, sec, escape(t.text), t.done ? ‘yes’ : ‘no’, t.priority || ‘none’, t.timeEst || ‘’, t.due || ‘’, escape((t.tags||[]).join(’,’)), escape(t.note)].join(’,’) + ‘\n’;
-});
-});
-});
-const blob = new Blob([csv], { type: ‘text/csv’ });
-const url = URL.createObjectURL(blob);
-const a = document.createElement(‘a’);
-a.href = url; a.download = `today-${todayKey()}.csv`; a.click();
-URL.revokeObjectURL(url);
-showToast(‘CSV downloaded’);
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = { version: 2, store, settings, focusData, badges, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `today-backup-${todayKey()}.json`; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Backup downloaded');
 });
 
-document.getElementById(‘importBtn’).addEventListener(‘click’, () => document.getElementById(‘importFile’).click());
-document.getElementById(‘importFile’).addEventListener(‘change’, e => {
-const file = e.target.files[0]; if (!file) return;
-const reader = new FileReader();
-reader.onload = ev => {
-try {
-const data = JSON.parse(ev.target.result);
-if (data.store) store = data.store;
-if (data.settings) settings = { …settings, …data.settings };
-if (data.focusData) focusData = data.focusData;
-if (data.badges) badges = data.badges;
-save(); saveSettings(); saveFocus(); saveBadges();
-renderHeader(); renderToday();
-showToast(‘Restored from backup’);
-} catch (err) { showToast(‘Invalid file’); }
-};
-reader.readAsText(file);
+document.getElementById('exportCsvBtn').addEventListener('click', () => {
+  let csv = 'date,section,task,done,priority,timeEst,due,tags,note\n';
+  Object.keys(store).sort().forEach(k => {
+    ['work','life'].forEach(sec => {
+      (store[k][sec] || []).forEach(t => {
+        const escape = v => `"${String(v || '').replace(/"/g,'""')}"`;
+        csv += [k, sec, escape(t.text), t.done ? 'yes' : 'no', t.priority || 'none', t.timeEst || '', t.due || '', escape((t.tags||[]).join(',')), escape(t.note)].join(',') + '\n';
+      });
+    });
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `today-${todayKey()}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV downloaded');
 });
 
-document.getElementById(‘clearBtn’).addEventListener(‘click’, () => {
-if (!confirm(‘Delete all data? This cannot be undone.’)) return;
-localStorage.removeItem(STORAGE_KEY);
-localStorage.removeItem(FOCUS_KEY);
-localStorage.removeItem(BADGES_KEY);
-store = {}; focusData = { sessions: [], totalSeconds: 0 }; badges = {};
-renderHeader(); renderToday();
-showToast(‘All cleared’);
+document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.store) store = data.store;
+      if (data.settings) settings = { ...settings, ...data.settings };
+      if (data.focusData) focusData = data.focusData;
+      if (data.badges) badges = data.badges;
+      save(); saveSettings(); saveFocus(); saveBadges();
+      renderHeader(); renderToday();
+      showToast('Restored from backup');
+    } catch (err) { showToast('Invalid file'); }
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!confirm('Delete all data? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(FOCUS_KEY);
+  localStorage.removeItem(BADGES_KEY);
+  store = {}; focusData = { sessions: [], totalSeconds: 0 }; badges = {};
+  renderHeader(); renderToday();
+  showToast('All cleared');
 });
 
 /* ===== TABS ===== */
-let activeView = ‘today’;
-document.querySelectorAll(’.tab’).forEach(tab => {
-tab.addEventListener(‘click’, () => {
-document.querySelectorAll(’.tab’).forEach(t => t.classList.remove(‘active’));
-tab.classList.add(‘active’);
-activeView = tab.dataset.view;
-[‘today’,‘calendar’,‘focus’,‘stats’,‘settings’].forEach(v => {
-document.getElementById(v + ‘View’).style.display = (v === activeView) ? ‘’ : ‘none’;
-});
-try {
-if (activeView === ‘today’) renderToday();
-if (activeView === ‘calendar’) renderCalendar();
-if (activeView === ‘focus’) { updateFocusUI(); renderFocusTaskList(); }
-if (activeView === ‘stats’) renderStats();
-} catch (err) {
-console.error(‘Tab render failed:’, err);
-showToast(‘Something went wrong on that tab’);
-}
-});
+let activeView = 'today';
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeView = tab.dataset.view;
+    ['today','calendar','focus','stats','settings'].forEach(v => {
+      document.getElementById(v + 'View').style.display = (v === activeView) ? '' : 'none';
+    });
+    try {
+      if (activeView === 'today') renderToday();
+      if (activeView === 'calendar') renderCalendar();
+      if (activeView === 'focus') { updateFocusUI(); renderFocusTaskList(); }
+      if (activeView === 'stats') renderStats();
+    } catch (err) {
+      console.error('Tab render failed:', err);
+      showToast('Something went wrong on that tab');
+    }
+  });
 });
 
 /* ===== FAB ===== */
-document.getElementById(‘fab’).addEventListener(‘click’, () => {
-// Switch to today view and focus first input
-document.querySelector(’.tab[data-view=“today”]’).click();
-setTimeout(() => {
-const inp = document.querySelector(’.task-input[data-section=“life”]’);
-if (inp) inp.focus();
-}, 200);
+document.getElementById('fab').addEventListener('click', () => {
+  // Switch to today view and focus first input
+  document.querySelector('.tab[data-view="today"]').click();
+  setTimeout(() => {
+    const inp = document.querySelector('.task-input[data-section="life"]');
+    if (inp) inp.focus();
+  }, 200);
 });
 
 /* ===== KEYBOARD SHORTCUTS ===== */
-document.addEventListener(‘keydown’, e => {
-if (e.target.tagName === ‘INPUT’ || e.target.tagName === ‘TEXTAREA’) return;
-if (e.key === ‘/’) { e.preventDefault(); document.getElementById(‘searchBtn’).click(); }
-if (e.key === ‘1’) document.querySelector(’.tab[data-view=“today”]’).click();
-if (e.key === ‘2’) document.querySelector(’.tab[data-view=“calendar”]’).click();
-if (e.key === ‘3’) document.querySelector(’.tab[data-view=“focus”]’).click();
-if (e.key === ‘4’) document.querySelector(’.tab[data-view=“stats”]’).click();
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === '/') { e.preventDefault(); document.getElementById('searchBtn').click(); }
+  if (e.key === '1') document.querySelector('.tab[data-view="today"]').click();
+  if (e.key === '2') document.querySelector('.tab[data-view="calendar"]').click();
+  if (e.key === '3') document.querySelector('.tab[data-view="focus"]').click();
+  if (e.key === '4') document.querySelector('.tab[data-view="stats"]').click();
 });
 
 /* ===== INIT ===== */
 try {
-handleRollover();
-renderHeader();
-renderToday();
-checkBadges();
+  handleRollover();
+  renderHeader();
+  renderToday();
+  checkBadges();
 } catch (err) {
-console.error(‘Init failed:’, err);
-// Show a visible error + reset option so user isn’t stuck
-document.body.innerHTML = `<div style="padding: 60px 24px; max-width: 480px; margin: 0 auto; font-family: -apple-system, sans-serif; color: #1a1a1a;"> <h2 style="font-family: Fraunces, Georgia, serif; font-size: 26px; margin-bottom: 12px;">Something went wrong</h2> <p style="font-size: 14px; color: #6b6b6b; margin-bottom: 18px; line-height: 1.5;">The app couldn't load your saved data. This usually happens after an update. You can reset and start fresh — your old browser data will be cleared.</p> <pre style="background: #f3f1ea; padding: 12px; border-radius: 6px; font-size: 11px; overflow: auto; margin-bottom: 18px; color: #c1440e;">${String(err.message || err).slice(0, 300)}</pre> <button onclick="localStorage.clear(); location.reload();" style="background: #c1440e; color: white; border: none; padding: 12px 24px; border-radius: 24px; font-size: 13px; cursor: pointer; letter-spacing: .08em; text-transform: uppercase;">Reset and reload</button> <button onclick="location.reload();" style="background: none; border: 1px solid #e7e4dc; color: #6b6b6b; padding: 12px 24px; border-radius: 24px; font-size: 13px; cursor: pointer; letter-spacing: .08em; text-transform: uppercase; margin-left: 8px;">Just reload</button> </div>`;
+  console.error('Init failed:', err);
+  // Show a visible error + reset option so user isn't stuck
+  document.body.innerHTML = `
+    <div style="padding: 60px 24px; max-width: 480px; margin: 0 auto; font-family: -apple-system, sans-serif; color: #1a1a1a;">
+      <h2 style="font-family: Fraunces, Georgia, serif; font-size: 26px; margin-bottom: 12px;">Something went wrong</h2>
+      <p style="font-size: 14px; color: #6b6b6b; margin-bottom: 18px; line-height: 1.5;">The app couldn't load your saved data. This usually happens after an update. You can reset and start fresh — your old browser data will be cleared.</p>
+      <pre style="background: #f3f1ea; padding: 12px; border-radius: 6px; font-size: 11px; overflow: auto; margin-bottom: 18px; color: #c1440e;">${String(err.message || err).slice(0, 300)}</pre>
+      <button onclick="localStorage.clear(); location.reload();" style="background: #c1440e; color: white; border: none; padding: 12px 24px; border-radius: 24px; font-size: 13px; cursor: pointer; letter-spacing: .08em; text-transform: uppercase;">Reset and reload</button>
+      <button onclick="location.reload();" style="background: none; border: 1px solid #e7e4dc; color: #6b6b6b; padding: 12px 24px; border-radius: 24px; font-size: 13px; cursor: pointer; letter-spacing: .08em; text-transform: uppercase; margin-left: 8px;">Just reload</button>
+    </div>
+  `;
 }
 
 // Update header at midnight roll
 setInterval(() => {
-const k = todayKey();
-if (k !== window._lastDateKey) {
-window._lastDateKey = k;
-handleRollover();
-renderHeader();
-if (activeView === ‘today’) renderToday();
-}
+  const k = todayKey();
+  if (k !== window._lastDateKey) {
+    window._lastDateKey = k;
+    handleRollover();
+    renderHeader();
+    if (activeView === 'today') renderToday();
+  }
 }, 60000);
 window._lastDateKey = todayKey();
 </script>
-
 </body>
 </html>
