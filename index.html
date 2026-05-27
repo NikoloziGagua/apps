@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Today" />
 <meta name="theme-color" content="#fafaf7" />
+<link rel="manifest" href='data:application/manifest+json,{"name":"Today","short_name":"Today","start_url":"./","display":"standalone","background_color":"#fafaf7","theme_color":"#fafaf7","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 fill=%22%23fafaf7%22/><text x=%2296%22 y=%22125%22 font-family=%22serif%22 font-size=%22110%22 text-anchor=%22middle%22 fill=%22%23111%22>•</text></svg>","sizes":"192x192","type":"image/svg+xml"}]}' />
 <title>Today</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,20 +17,20 @@
 <style>
   :root, [data-theme="light"] {
     --bg: #fafaf7;
-    --bg-soft: #f3f1ea;
+    --bg-soft: #efece3;
     --bg-card: #ffffff;
     --ink: #1a1a1a;
-    --ink-soft: #6b6b6b;
-    --ink-faint: #b4b0a8;
-    --line: #e7e4dc;
-    --line-soft: #efece5;
-    --accent: #c1440e;
+    --ink-soft: #525252;
+    --ink-faint: #8a857c;
+    --line: #d4d0c2;
+    --line-soft: #e7e4dc;
+    --accent: #b03c0a;
     --accent-soft: #e8a081;
     --done: #9ca39a;
-    --green: #5a7a4a;
-    --blue: #3d6b8a;
-    --rose: #b14a6a;
-    --gold: #b8893c;
+    --green: #4d6a3e;
+    --blue: #355d7a;
+    --rose: #9d3e5c;
+    --gold: #a87a2e;
     --radius: 14px;
     --radius-sm: 8px;
   }
@@ -37,18 +38,18 @@
     --bg: #14130f;
     --bg-soft: #1d1c17;
     --bg-card: #1a1915;
-    --ink: #f0ece4;
-    --ink-soft: #9c9890;
-    --ink-faint: #5a564f;
-    --line: #2a2823;
-    --line-soft: #221f1b;
-    --accent: #e8794a;
+    --ink: #f5f1e8;
+    --ink-soft: #b3afa5;
+    --ink-faint: #7a766d;
+    --line: #3a3730;
+    --line-soft: #2a2823;
+    --accent: #f08a5a;
     --accent-soft: #9b5236;
-    --done: #5a564f;
-    --green: #8fa97e;
-    --blue: #7aa3c1;
-    --rose: #d4859a;
-    --gold: #d4b06a;
+    --done: #6a655d;
+    --green: #a3bf90;
+    --blue: #8ab2cf;
+    --rose: #dc94a8;
+    --gold: #dcb878;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -64,7 +65,7 @@
     overflow-x: hidden;
   }
 
-  /* ============ HEADER ============ asadasdsd*/
+  /* ============ HEADER ============ */
   header { margin-bottom: 24px; animation: fadeUp .9s cubic-bezier(.2,.7,.2,1) both; position: relative; }
   .header-top {
     display: flex; align-items: center; justify-content: space-between;
@@ -86,8 +87,8 @@
   [data-theme="dark"] #themeToggle .icon-moon { display: none; }
 
   .date-line {
-    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
-    font-size: 14px; color: var(--ink-soft); letter-spacing: .02em;
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+    font-size: 15px; color: var(--ink-soft); letter-spacing: .02em;
   }
   h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 44px; line-height: 1; letter-spacing: -.02em; }
   h1 .accent { font-style: italic; font-weight: 300; color: var(--accent); }
@@ -116,8 +117,8 @@
   }
   .progress-meta {
     display: flex; justify-content: space-between;
-    font-size: 10px; color: var(--ink-faint);
-    letter-spacing: .08em; margin-top: 6px; text-transform: uppercase;
+    font-size: 11px; color: var(--ink-soft);
+    letter-spacing: .08em; margin-top: 8px; text-transform: uppercase; font-weight: 500;
   }
 
   /* ============ TABS ============ */
@@ -130,16 +131,16 @@
   }
   nav.tabs::-webkit-scrollbar { display: none; }
   .tab {
-    background: none; border: none; font-family: inherit; font-size: 12px; font-weight: 400;
-    color: var(--ink-faint); padding: 12px 0; margin-right: 22px; cursor: pointer;
+    background: none; border: none; font-family: inherit; font-size: 12px; font-weight: 500;
+    color: var(--ink-soft); padding: 14px 0; margin-right: 22px; cursor: pointer;
     position: relative; letter-spacing: .08em; text-transform: uppercase;
     transition: color .3s ease; white-space: nowrap; flex-shrink: 0;
   }
-  .tab:hover { color: var(--ink-soft); }
-  .tab.active { color: var(--ink); }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--ink); font-weight: 600; }
   .tab.active::after {
     content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
-    height: 1px; background: var(--ink);
+    height: 2px; background: var(--ink);
     animation: tabUnderline .4s cubic-bezier(.2,.7,.2,1);
   }
   @keyframes tabUnderline {
@@ -153,13 +154,13 @@
   /* ============ SECTIONS / TASKS ============ */
   .section { margin-bottom: 28px; }
   .section-label {
-    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
-    font-size: 13px; color: var(--ink-soft); margin-bottom: 12px;
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+    font-size: 18px; color: var(--ink); margin-bottom: 14px;
     display: flex; align-items: baseline; justify-content: space-between;
   }
   .section-label .meta {
     font-family: 'Inter Tight', sans-serif; font-style: normal;
-    font-size: 11px; color: var(--ink-faint); letter-spacing: .08em;
+    font-size: 11px; color: var(--ink-soft); letter-spacing: .08em; font-weight: 500;
   }
 
   ul.tasks { list-style: none; }
@@ -179,16 +180,16 @@
   li.task.drag-over { border-top: 2px solid var(--accent); }
 
   .checkbox {
-    flex-shrink: 0; width: 18px; height: 18px;
-    border: 1px solid var(--ink-faint); border-radius: 50%;
-    margin-top: 3px; position: relative;
+    flex-shrink: 0; width: 20px; height: 20px;
+    border: 1.5px solid var(--ink-soft); border-radius: 50%;
+    margin-top: 2px; position: relative;
     transition: all .3s cubic-bezier(.2,.7,.2,1);
   }
   .task.done .checkbox { background: var(--ink); border-color: var(--ink); transform: scale(.92); }
   .checkbox::after {
     content: ''; position: absolute; top: 50%; left: 50%;
-    width: 8px; height: 4px;
-    border-left: 1.5px solid var(--bg); border-bottom: 1.5px solid var(--bg);
+    width: 9px; height: 5px;
+    border-left: 2px solid var(--bg); border-bottom: 2px solid var(--bg);
     transform: translate(-50%, -65%) rotate(-45deg) scale(0);
     transition: transform .35s cubic-bezier(.34,1.56,.64,1) .05s;
   }
@@ -208,6 +209,7 @@
   .task-text {
     font-size: 16px; line-height: 1.4; color: var(--ink);
     transition: color .35s ease; word-break: break-word;
+    font-weight: 450;
   }
   .task.done .task-text {
     color: var(--done); text-decoration: line-through;
@@ -288,19 +290,19 @@
 
   /* ============ INPUT ============ */
   .input-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 0; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 0; border-bottom: 1px solid var(--line);
     position: relative;
   }
   .input-row .plus {
-    flex-shrink: 0; width: 18px; height: 18px;
-    border-radius: 50%; border: 1px dashed var(--ink-faint);
+    flex-shrink: 0; width: 20px; height: 20px;
+    border-radius: 50%; border: 1.5px dashed var(--ink-soft);
     display: flex; align-items: center; justify-content: center;
-    color: var(--ink-faint); font-size: 14px; line-height: 1;
+    color: var(--ink-soft); font-size: 15px; line-height: 1; font-weight: 500;
     transition: all .3s ease;
   }
   .input-row:focus-within .plus {
-    border-style: solid; border-color: var(--ink); color: var(--ink);
+    border-style: solid; border-color: var(--accent); color: var(--accent);
     transform: rotate(90deg);
   }
   input.task-input {
@@ -309,18 +311,18 @@
     min-width: 0;
   }
   input.task-input::placeholder {
-    color: var(--ink-faint); font-style: italic;
-    font-family: 'Fraunces', serif; font-weight: 300;
+    color: var(--ink-soft); font-style: italic;
+    font-family: 'Fraunces', serif; font-weight: 400;
   }
   .input-hint {
-    font-size: 9px; color: var(--ink-faint);
-    letter-spacing: .08em; text-transform: uppercase;
-    margin-top: 4px; padding-left: 30px;
+    font-size: 10px; color: var(--ink-soft);
+    letter-spacing: .06em; text-transform: uppercase;
+    margin-top: 8px; padding-left: 32px;
   }
   .input-hint kbd {
     background: var(--bg-soft); border: 1px solid var(--line);
-    border-radius: 3px; padding: 1px 4px; font-family: monospace;
-    font-size: 9px;
+    border-radius: 3px; padding: 2px 5px; font-family: monospace;
+    font-size: 10px; color: var(--ink); font-weight: 600;
   }
 
   /* ============ EMPTY ============ */
@@ -819,12 +821,358 @@
   }
   .filter-row::-webkit-scrollbar { display: none; }
   .filter-chip {
-    background: none; border: 1px solid var(--line); color: var(--ink-soft);
-    padding: 5px 12px; border-radius: 14px; cursor: pointer;
-    font-family: inherit; font-size: 11px; white-space: nowrap;
-    transition: all .2s ease;
+    background: var(--bg-card); border: 1px solid var(--line); color: var(--ink);
+    padding: 7px 14px; border-radius: 16px; cursor: pointer;
+    font-family: inherit; font-size: 12px; white-space: nowrap;
+    transition: all .2s ease; font-weight: 500;
   }
   .filter-chip.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  /* ============ BOARD (Kanban) ============ */
+  .board-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .board-horizons {
+    display: flex; gap: 6px; margin-bottom: 18px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .board-horizons::-webkit-scrollbar { display: none; }
+  .horizon-pill {
+    background: var(--bg-card); border: 1px solid var(--line);
+    color: var(--ink); padding: 8px 14px; border-radius: 18px;
+    cursor: pointer; font-family: inherit; font-size: 12px;
+    white-space: nowrap; transition: all .2s ease; font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .horizon-pill .count {
+    background: var(--bg-soft); color: var(--ink-soft);
+    padding: 1px 7px; border-radius: 10px; font-size: 10px;
+    font-weight: 600;
+  }
+  .horizon-pill.active {
+    background: var(--ink); color: var(--bg); border-color: var(--ink);
+  }
+  .horizon-pill.active .count { background: rgba(255,255,255,.15); color: var(--bg); }
+
+  .board-columns {
+    display: flex; gap: 12px; overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 80px;
+    margin: 0 -24px; padding-left: 24px; padding-right: 24px;
+    scrollbar-width: none;
+  }
+  .board-columns::-webkit-scrollbar { display: none; }
+  .column {
+    flex: 0 0 78%; max-width: 320px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    min-height: 300px;
+    scroll-snap-align: start;
+    display: flex; flex-direction: column;
+    transition: background-color .2s ease, border-color .2s ease;
+  }
+  .column.drop-target {
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg-soft));
+    border-color: var(--accent);
+    border-style: dashed;
+  }
+  .column-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; padding-bottom: 10px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .column-title {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+    font-size: 17px; color: var(--ink);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .column-title .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ink-faint);
+  }
+  .column-title.todo .dot { background: var(--blue); }
+  .column-title.progress .dot { background: var(--gold); }
+  .column-title.done .dot { background: var(--green); }
+  .column-count {
+    font-size: 11px; color: var(--ink-soft);
+    font-weight: 500; letter-spacing: .04em;
+    background: var(--bg); padding: 2px 8px; border-radius: 10px;
+  }
+  .column-body { flex: 1; min-height: 50px; }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: grab;
+    transition: all .2s ease;
+    animation: cardIn .35s cubic-bezier(.2,.7,.2,1) both;
+    position: relative;
+    touch-action: pan-y;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card.removing { animation: cardOut .3s ease forwards; }
+  @keyframes cardOut {
+    to { opacity: 0; transform: translateX(20px); }
+  }
+  .card:active { cursor: grabbing; }
+  .card.dragging {
+    opacity: .5;
+    transform: scale(.96);
+    box-shadow: 0 8px 24px -6px rgba(0,0,0,.25);
+  }
+  /* Floating ghost while dragging on touch */
+  .card.floating {
+    position: fixed;
+    z-index: 100;
+    pointer-events: none;
+    opacity: .92;
+    box-shadow: 0 12px 32px -6px rgba(0,0,0,.4);
+    transform: rotate(-2deg) scale(1.02);
+    width: 260px;
+  }
+  .card-text {
+    font-size: 14px; color: var(--ink);
+    line-height: 1.4; word-break: break-word;
+    font-weight: 450;
+  }
+  .card.done .card-text {
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-faint);
+    color: var(--ink-soft);
+  }
+  .card-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 8px; flex-wrap: wrap;
+  }
+  .card-meta .horizon-tag {
+    font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 500;
+  }
+  .card-meta .horizon-tag .marker {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; margin-right: 4px; vertical-align: middle;
+  }
+  .card-meta .horizon-tag.week .marker { background: var(--accent); }
+  .card-meta .horizon-tag.month .marker { background: var(--gold); }
+  .card-meta .horizon-tag.someday .marker { background: var(--blue); }
+  .card-meta .card-note-preview {
+    font-size: 11px; color: var(--ink-soft);
+    font-style: italic; font-family: 'Fraunces', serif;
+    font-weight: 300;
+  }
+  .card .card-actions {
+    position: absolute; top: 8px; right: 8px;
+    opacity: 0; display: flex; gap: 4px;
+    transition: opacity .2s ease;
+  }
+  .card:hover .card-actions { opacity: 1; }
+  @media (hover: none) { .card .card-actions { opacity: 1; } }
+  .card .card-actions button {
+    background: var(--bg-soft); border: 1px solid var(--line);
+    color: var(--ink-soft); font-size: 11px;
+    width: 24px; height: 24px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    padding: 0; line-height: 1;
+  }
+  .card .card-actions button:hover { color: var(--ink); border-color: var(--ink); }
+  .card .card-actions .delete:hover { color: var(--accent); border-color: var(--accent); }
+
+  .column-add {
+    background: none; border: 1.5px dashed var(--ink-soft);
+    color: var(--ink-soft); padding: 10px;
+    width: 100%; border-radius: 8px; cursor: pointer;
+    font-family: inherit; font-size: 13px;
+    transition: all .2s ease;
+    margin-top: 4px;
+  }
+  .column-add:hover { color: var(--ink); border-color: var(--ink); }
+  .column-add-input {
+    background: var(--bg-card); border: 1.5px solid var(--accent);
+    color: var(--ink); padding: 10px 12px;
+    width: 100%; border-radius: 8px;
+    font-family: inherit; font-size: 14px;
+    outline: none; margin-top: 4px;
+  }
+  .column-add-input::placeholder {
+    color: var(--ink-faint); font-style: italic;
+    font-family: 'Fraunces', serif;
+  }
+
+  .board-empty-col {
+    color: var(--ink-faint); font-style: italic;
+    font-family: 'Fraunces', serif; font-size: 13px;
+    text-align: center; padding: 24px 8px;
+    border: 1px dashed var(--line); border-radius: 8px;
+  }
+
+  /* Column swipe hint */
+  .column-hint {
+    text-align: center; font-size: 10px;
+    color: var(--ink-faint); letter-spacing: .12em;
+    text-transform: uppercase; margin-top: -8px; margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .column-hint .arrow { opacity: .5; margin: 0 6px; }
+
+  /* ============ SPARKS (Ideas notebook) ============ */
+  .sparks-intro {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+    font-size: 15px; color: var(--ink-soft); line-height: 1.5;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--gold) 8%, var(--bg-soft));
+    border-left: 2px solid var(--gold);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .spark-capture {
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px -6px rgba(0,0,0,.08);
+    position: relative;
+  }
+  .spark-capture::before {
+    content: '✦'; position: absolute;
+    top: -8px; left: 16px;
+    background: var(--bg); color: var(--gold);
+    font-size: 14px; padding: 0 8px;
+  }
+  .spark-capture textarea {
+    width: 100%; background: none; border: none;
+    color: var(--ink); font-family: 'Fraunces', serif;
+    font-style: italic; font-size: 15px; line-height: 1.5;
+    outline: none; resize: none; min-height: 60px;
+    font-weight: 400;
+  }
+  .spark-capture textarea::placeholder {
+    color: var(--ink-faint); font-weight: 300;
+  }
+  .spark-capture-actions {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-top: 8px;
+    padding-top: 8px; border-top: 1px dashed var(--line);
+  }
+  .spark-tag-row {
+    display: flex; gap: 6px;
+  }
+  .spark-tag-btn {
+    background: none; border: 1px solid var(--line);
+    color: var(--ink-soft); padding: 4px 10px;
+    border-radius: 12px; cursor: pointer;
+    font-family: inherit; font-size: 10px;
+    letter-spacing: .08em; text-transform: uppercase;
+    transition: all .2s ease;
+  }
+  .spark-tag-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .spark-save-btn {
+    background: var(--gold); color: white;
+    border: none; padding: 7px 16px; border-radius: 14px;
+    font-family: inherit; font-size: 11px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    cursor: pointer;
+  }
+  .spark-save-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Spark feed - paper scraps */
+  .sparks-feed { position: relative; }
+  .spark {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    position: relative;
+    animation: sparkIn .5s cubic-bezier(.2,.7,.2,1) both;
+    box-shadow: 0 2px 8px -4px rgba(0,0,0,.1);
+  }
+  /* Slight rotation alternation, like scraps */
+  .spark:nth-child(odd) { transform: rotate(-.3deg); }
+  .spark:nth-child(even) { transform: rotate(.4deg); }
+  .spark:nth-child(3n) { transform: rotate(-.5deg); }
+  @keyframes sparkIn {
+    from { opacity: 0; transform: translateY(10px) rotate(0); }
+    to { opacity: 1; }
+  }
+  .spark.removing { animation: sparkOut .35s ease forwards; }
+  @keyframes sparkOut {
+    to { opacity: 0; transform: translateX(20px) rotate(3deg); }
+  }
+  .spark::before {
+    content: '✦';
+    position: absolute; top: -8px; left: 14px;
+    background: var(--bg); color: var(--gold);
+    font-size: 12px; padding: 0 6px;
+  }
+  .spark .spark-text {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 15px; line-height: 1.5; color: var(--ink);
+    word-break: break-word; font-weight: 400;
+  }
+  .spark .spark-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 8px;
+    font-size: 10px; color: var(--ink-faint);
+    letter-spacing: .08em; text-transform: uppercase;
+  }
+  .spark .spark-tag-badge {
+    background: var(--bg-soft);
+    padding: 2px 8px; border-radius: 10px;
+    font-weight: 500;
+  }
+  .spark .spark-tag-badge.idea { color: var(--gold); }
+  .spark .spark-tag-badge.thought { color: var(--blue); }
+  .spark .spark-tag-badge.question { color: var(--rose); }
+  .spark .spark-tag-badge.dream { color: var(--accent); }
+
+  .spark-actions {
+    display: flex; gap: 6px; margin-top: 10px;
+    padding-top: 10px; border-top: 1px dashed var(--line);
+  }
+  .spark-action {
+    background: none; border: 1px solid var(--line);
+    color: var(--ink-soft); padding: 5px 12px;
+    border-radius: 12px; cursor: pointer;
+    font-family: inherit; font-size: 10px;
+    letter-spacing: .08em; text-transform: uppercase;
+    transition: all .2s ease; font-weight: 500;
+  }
+  .spark-action:hover { color: var(--ink); border-color: var(--ink); }
+  .spark-action.promote:hover { color: var(--gold); border-color: var(--gold); }
+  .spark-action.delete:hover { color: var(--accent); border-color: var(--accent); }
+
+  .sparks-empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--ink-faint); font-family: 'Fraunces', serif;
+    font-style: italic; font-size: 16px;
+  }
+  .sparks-empty .big-spark {
+    font-size: 32px; color: var(--gold);
+    display: block; margin-bottom: 12px; opacity: .5;
+  }
+
+  /* Spark count badge in tab */
+  .tab .badge-count {
+    background: var(--accent); color: white;
+    font-size: 9px; padding: 1px 6px;
+    border-radius: 8px; margin-left: 4px;
+    font-weight: 700; letter-spacing: 0;
+  }
+
+  /* Edit card modal */
+  .card-edit-modal {
+    background: var(--bg); padding: 24px;
+    border-radius: 16px 16px 0 0;
+  }
 
 </style>
 </head>
@@ -859,6 +1207,8 @@
 
 <nav class="tabs">
   <button class="tab active" data-view="today">Today</button>
+  <button class="tab" data-view="board">Board</button>
+  <button class="tab" data-view="sparks">Sparks</button>
   <button class="tab" data-view="calendar">Calendar</button>
   <button class="tab" data-view="focus">Focus</button>
   <button class="tab" data-view="stats">Stats</button>
@@ -912,6 +1262,62 @@
   <div class="input-hint">
     Tip: type <kbd>!</kbd> for high priority, <kbd>~30m</kbd> for time, <kbd>@tomorrow</kbd> for due date
   </div>
+</main>
+
+<!-- BOARD -->
+<main id="boardView" class="view" style="display:none">
+  <div class="board-header">
+    <div class="board-horizons" id="boardHorizons"></div>
+  </div>
+  <div class="column-hint">
+    <span class="arrow">←</span> swipe between columns <span class="arrow">→</span>
+  </div>
+  <div class="board-columns" id="boardColumns">
+    <div class="column" data-status="todo">
+      <div class="column-header">
+        <div class="column-title todo"><span class="dot"></span>To do</div>
+        <span class="column-count" data-status-count="todo">0</span>
+      </div>
+      <div class="column-body" data-column-body="todo"></div>
+      <button class="column-add" data-add="todo">+ add</button>
+    </div>
+    <div class="column" data-status="progress">
+      <div class="column-header">
+        <div class="column-title progress"><span class="dot"></span>In progress</div>
+        <span class="column-count" data-status-count="progress">0</span>
+      </div>
+      <div class="column-body" data-column-body="progress"></div>
+      <button class="column-add" data-add="progress">+ add</button>
+    </div>
+    <div class="column" data-status="done">
+      <div class="column-header">
+        <div class="column-title done"><span class="dot"></span>Done</div>
+        <span class="column-count" data-status-count="done">0</span>
+      </div>
+      <div class="column-body" data-column-body="done"></div>
+      <button class="column-add" data-add="done">+ add</button>
+    </div>
+  </div>
+</main>
+
+<!-- SPARKS -->
+<main id="sparksView" class="view" style="display:none">
+  <div class="sparks-intro">
+    A scratchpad for whatever comes to mind — ideas, half-thoughts, questions, things you want to try someday. Promote a spark to the board when it's ready to become real.
+  </div>
+  <div class="spark-capture">
+    <textarea id="sparkInput" placeholder="catch the thought before it goes…"></textarea>
+    <div class="spark-capture-actions">
+      <div class="spark-tag-row">
+        <button class="spark-tag-btn active" data-spark-tag="idea">Idea</button>
+        <button class="spark-tag-btn" data-spark-tag="thought">Thought</button>
+        <button class="spark-tag-btn" data-spark-tag="question">Question</button>
+        <button class="spark-tag-btn" data-spark-tag="dream">Dream</button>
+      </div>
+      <button class="spark-save-btn" id="sparkSaveBtn">Save ✦</button>
+    </div>
+  </div>
+  <div class="sparks-feed" id="sparksFeed"></div>
 </main>
 
 <!-- CALENDAR -->
@@ -1173,24 +1579,13 @@
 <!-- Global error catcher -->
 <script>
 window.addEventListener('error', function(e) {
-  // Ignore errors from external resources (fonts, images, extensions)
-  // Only catch errors from our own inline script
-  if (e.filename && !e.filename.startsWith(location.origin) && e.filename !== '') {
-    console.warn('Ignored external error:', e.message, e.filename);
-    return;
-  }
-  // Ignore resource load errors (font 404s etc)
-  if (e.target && e.target !== window) {
-    console.warn('Ignored resource error:', e.target);
-    return;
-  }
   var c = document.getElementById('crashScreen');
   var ce = document.getElementById('crashErr');
   if (c && ce) {
     ce.textContent = (e.message || 'Unknown error') + (e.filename ? '\nat ' + e.filename + ':' + e.lineno : '');
     c.style.display = 'block';
   }
-}, true);
+});
 </script>
 
 <script>
@@ -1220,6 +1615,8 @@ const SETTINGS_KEY = 'today.settings';
 const FOCUS_KEY = 'today.focus';
 const TEMPLATES_KEY = 'today.templates';
 const BADGES_KEY = 'today.badges';
+const BOARD_KEY = 'today.board';
+const SPARKS_KEY = 'today.sparks';
 
 const pad = n => String(n).padStart(2,'0');
 const dateKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -1303,6 +1700,39 @@ let badges = (() => {
 })();
 const saveBadges = () => localStorage.setItem(BADGES_KEY, JSON.stringify(badges));
 
+let board = (() => {
+  try {
+    const b = JSON.parse(localStorage.getItem(BOARD_KEY)) || { cards: [] };
+    if (!Array.isArray(b.cards)) b.cards = [];
+    // Sanitize cards
+    b.cards = b.cards.filter(c => c && typeof c.text === 'string').map(c => ({
+      id: c.id || Math.random().toString(36).slice(2,9),
+      text: c.text,
+      status: ['todo','progress','done'].includes(c.status) ? c.status : 'todo',
+      horizon: ['week','month','someday'].includes(c.horizon) ? c.horizon : 'week',
+      note: typeof c.note === 'string' ? c.note : '',
+      created: c.created || Date.now(),
+      order: typeof c.order === 'number' ? c.order : 0,
+    }));
+    return b;
+  } catch { return { cards: [] }; }
+})();
+const saveBoard = () => localStorage.setItem(BOARD_KEY, JSON.stringify(board));
+
+let sparks = (() => {
+  try {
+    const s = JSON.parse(localStorage.getItem(SPARKS_KEY)) || [];
+    if (!Array.isArray(s)) return [];
+    return s.filter(x => x && typeof x.text === 'string').map(x => ({
+      id: x.id || Math.random().toString(36).slice(2,9),
+      text: x.text,
+      tag: ['idea','thought','question','dream'].includes(x.tag) ? x.tag : 'idea',
+      created: x.created || Date.now(),
+    }));
+  } catch { return []; }
+})();
+const saveSparks = () => localStorage.setItem(SPARKS_KEY, JSON.stringify(sparks));
+
 const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
 const getDay = (key = todayKey()) => {
   if (!store[key]) store[key] = { work: [], life: [], note: '', mood: null };
@@ -1342,12 +1772,43 @@ const handleRollover = () => {
     if (open.length) {
       const td = getDay(today);
       open.forEach(t => {
+        // Don't double-roll: skip if today already has this task rolled from same source
+        const alreadyRolled = (td[sec] || []).some(x => x.rolledFrom === lastOpen && x.text === t.text);
+        if (alreadyRolled) return;
         td[sec].push({ ...t, id: Math.random().toString(36).slice(2,9), rolledFrom: lastOpen });
         rolled++;
       });
-      // Remove from yesterday
-      lastDay[sec] = (lastDay[sec] || []).filter(t => t && t.done);
+      // NOTE: do NOT remove from yesterday — yesterday's history stays accurate.
+      // The task being open on yesterday is a real fact; rolling forward just gives you
+      // a fresh copy to work with today.
     }
+  });
+
+  /* Heal previously-damaged data:
+     Earlier versions MOVED tasks instead of copying, leaving yesterday
+     looking incomplete. If today has a task with rolledFrom=X and that
+     task no longer exists in X, restore it to X (as undone). */
+  ['work','life'].forEach(sec => {
+    (getDay(today)[sec] || []).forEach(t => {
+      if (!t.rolledFrom) return;
+      const source = store[t.rolledFrom];
+      if (!source) return;
+      const exists = (source[sec] || []).some(x => x.text === t.text);
+      if (!exists) {
+        source[sec] = source[sec] || [];
+        source[sec].push({
+          text: t.text,
+          done: false,
+          id: Math.random().toString(36).slice(2,9),
+          priority: t.priority || 'none',
+          tags: t.tags || [],
+          note: t.note || '',
+          timeEst: t.timeEst || '',
+          recur: t.recur || '',
+          subtasks: (t.subtasks || []).map(s => ({ ...s }))
+        });
+      }
+    });
   });
   // Handle recurring tasks - create instances for today
   // Build set of all recurring task signatures from past days
@@ -2578,6 +3039,482 @@ document.getElementById('clearBtn').addEventListener('click', () => {
   showToast('All cleared');
 });
 
+/* ===== BOARD ===== */
+let activeHorizon = 'week';
+const HORIZON_LABELS = { week: 'This week', month: 'This month', someday: 'Someday' };
+
+const renderBoardHorizons = () => {
+  const wrap = document.getElementById('boardHorizons');
+  wrap.innerHTML = '';
+  Object.keys(HORIZON_LABELS).forEach(h => {
+    const count = board.cards.filter(c => c.horizon === h && c.status !== 'done').length;
+    const btn = document.createElement('button');
+    btn.className = 'horizon-pill' + (h === activeHorizon ? ' active' : '');
+    btn.innerHTML = `${HORIZON_LABELS[h]}<span class="count">${count}</span>`;
+    btn.onclick = () => {
+      activeHorizon = h;
+      renderBoard();
+    };
+    wrap.appendChild(btn);
+  });
+};
+
+const renderBoard = () => {
+  renderBoardHorizons();
+  const cards = board.cards.filter(c => c.horizon === activeHorizon);
+  ['todo','progress','done'].forEach(status => {
+    const body = document.querySelector(`[data-column-body="${status}"]`);
+    const countEl = document.querySelector(`[data-status-count="${status}"]`);
+    body.innerHTML = '';
+    const statusCards = cards.filter(c => c.status === status).sort((a,b) => (a.order||0) - (b.order||0));
+    countEl.textContent = statusCards.length;
+    if (statusCards.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'board-empty-col';
+      empty.textContent = status === 'todo' ? 'nothing planned' : status === 'progress' ? 'nothing in flight' : 'nothing finished yet';
+      body.appendChild(empty);
+    }
+    statusCards.forEach((card, i) => {
+      body.appendChild(renderCard(card, i));
+    });
+  });
+  setupColumnAdds();
+  setupDragDrop();
+};
+
+const renderCard = (card, i) => {
+  const div = document.createElement('div');
+  div.className = 'card' + (card.status === 'done' ? ' done' : '');
+  div.dataset.id = card.id;
+  div.style.animationDelay = (i * 30) + 'ms';
+
+  const text = document.createElement('div');
+  text.className = 'card-text';
+  text.textContent = card.text;
+  div.appendChild(text);
+
+  // Meta
+  const meta = document.createElement('div');
+  meta.className = 'card-meta';
+  const hTag = document.createElement('span');
+  hTag.className = 'horizon-tag ' + card.horizon;
+  hTag.innerHTML = `<span class="marker"></span>${HORIZON_LABELS[card.horizon]}`;
+  meta.appendChild(hTag);
+  if (card.note) {
+    const np = document.createElement('span');
+    np.className = 'card-note-preview';
+    np.textContent = '"' + (card.note.length > 30 ? card.note.slice(0, 30) + '…' : card.note) + '"';
+    meta.appendChild(np);
+  }
+  div.appendChild(meta);
+
+  // Actions
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+  const editBtn = document.createElement('button');
+  editBtn.innerHTML = '✎';
+  editBtn.title = 'edit';
+  editBtn.onclick = (e) => { e.stopPropagation(); openCardEdit(card); };
+  const delBtn = document.createElement('button');
+  delBtn.className = 'delete';
+  delBtn.innerHTML = '×';
+  delBtn.title = 'delete';
+  delBtn.onclick = (e) => { e.stopPropagation(); deleteCard(card); };
+  actions.appendChild(editBtn);
+  actions.appendChild(delBtn);
+  div.appendChild(actions);
+
+  return div;
+};
+
+const setupColumnAdds = () => {
+  document.querySelectorAll('.column-add').forEach(btn => {
+    btn.onclick = () => {
+      const status = btn.dataset.add;
+      const parent = btn.parentElement;
+      // Replace button with input
+      const input = document.createElement('input');
+      input.className = 'column-add-input';
+      input.placeholder = 'a new card…';
+      input.value = '';
+      btn.style.display = 'none';
+      parent.appendChild(input);
+      input.focus();
+      const cleanup = () => {
+        input.remove();
+        btn.style.display = '';
+      };
+      input.onkeydown = e => {
+        if (e.key === 'Enter') {
+          const txt = input.value.trim();
+          if (!txt) { cleanup(); return; }
+          board.cards.push({
+            id: Math.random().toString(36).slice(2,9),
+            text: txt,
+            status,
+            horizon: activeHorizon,
+            note: '',
+            created: Date.now(),
+            order: Date.now(),
+          });
+          saveBoard();
+          cleanup();
+          renderBoard();
+          playTone(523, 0.06);
+        } else if (e.key === 'Escape') {
+          cleanup();
+        }
+      };
+      input.onblur = () => setTimeout(cleanup, 200);
+    };
+  });
+};
+
+const deleteCard = (card) => {
+  const el = document.querySelector(`.card[data-id="${card.id}"]`);
+  if (el) el.classList.add('removing');
+  const backup = JSON.parse(JSON.stringify(board.cards));
+  setTimeout(() => {
+    board.cards = board.cards.filter(c => c.id !== card.id);
+    saveBoard();
+    renderBoard();
+    showToast('Card removed', () => {
+      board.cards = backup;
+      saveBoard();
+      renderBoard();
+    });
+  }, 280);
+};
+
+/* ===== CARD EDIT MODAL ===== */
+let editingCard = null;
+const openCardEdit = (card) => {
+  editingCard = card;
+  // Reuse the existing edit modal by repurposing — but it has todo-specific fields.
+  // Build a quick prompt-style modal for the card.
+  const modal = document.getElementById('editModal');
+  modal.querySelector('.modal').innerHTML = `
+    <div class="modal-handle"></div>
+    <button class="modal-close" id="cardEditClose">×</button>
+    <h2 style="font-family:Fraunces,serif;font-weight:400;font-size:22px;margin-bottom:18px;">Edit card</h2>
+    <div class="edit-modal-inner">
+      <div class="edit-field">
+        <label>Text</label>
+        <input type="text" id="cardEditText" />
+      </div>
+      <div class="edit-field">
+        <label>Horizon</label>
+        <div class="edit-priority">
+          <button class="pri-btn" data-horizon="week">This week</button>
+          <button class="pri-btn" data-horizon="month">This month</button>
+          <button class="pri-btn" data-horizon="someday">Someday</button>
+        </div>
+      </div>
+      <div class="edit-field">
+        <label>Status</label>
+        <div class="edit-priority">
+          <button class="pri-btn" data-status="todo">To do</button>
+          <button class="pri-btn" data-status="progress">In progress</button>
+          <button class="pri-btn" data-status="done">Done</button>
+        </div>
+      </div>
+      <div class="edit-field">
+        <label>Note</label>
+        <textarea id="cardEditNote" placeholder="any extra detail…"></textarea>
+      </div>
+      <button class="save-btn" id="cardEditSave">Save</button>
+    </div>
+  `;
+  document.getElementById('cardEditText').value = card.text;
+  document.getElementById('cardEditNote').value = card.note || '';
+  modal.querySelectorAll('[data-horizon]').forEach(b => {
+    b.classList.toggle('selected', b.dataset.horizon === card.horizon);
+    b.onclick = () => {
+      modal.querySelectorAll('[data-horizon]').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+    };
+  });
+  modal.querySelectorAll('[data-status]').forEach(b => {
+    b.classList.toggle('selected', b.dataset.status === card.status);
+    b.onclick = () => {
+      modal.querySelectorAll('[data-status]').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+    };
+  });
+  document.getElementById('cardEditClose').onclick = () => modal.classList.remove('open');
+  document.getElementById('cardEditSave').onclick = () => {
+    card.text = document.getElementById('cardEditText').value.trim() || card.text;
+    card.note = document.getElementById('cardEditNote').value.trim();
+    const selH = modal.querySelector('[data-horizon].selected');
+    const selS = modal.querySelector('[data-status].selected');
+    if (selH) card.horizon = selH.dataset.horizon;
+    if (selS) card.status = selS.dataset.status;
+    saveBoard();
+    modal.classList.remove('open');
+    renderBoard();
+    showToast('Card saved');
+  };
+  modal.classList.add('open');
+};
+
+/* ===== DRAG & DROP (touch + mouse) ===== */
+let dragData = null;
+const setupDragDrop = () => {
+  document.querySelectorAll('#boardView .card').forEach(card => {
+    // Mouse drag (desktop)
+    card.draggable = true;
+    card.addEventListener('dragstart', e => {
+      const id = card.dataset.id;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', id);
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.column').forEach(c => c.classList.remove('drop-target'));
+    });
+
+    // Touch drag
+    let touchStartY = 0, touchStartX = 0, touching = false, ghost = null, longPressTimer = null, startedDrag = false;
+    card.addEventListener('touchstart', e => {
+      if (e.target.closest('.card-actions')) return;
+      touching = true;
+      startedDrag = false;
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+      longPressTimer = setTimeout(() => {
+        if (!touching) return;
+        startedDrag = true;
+        // start drag
+        const rect = card.getBoundingClientRect();
+        ghost = card.cloneNode(true);
+        ghost.classList.add('floating');
+        ghost.style.left = (e.touches[0].clientX - rect.width/2) + 'px';
+        ghost.style.top = (e.touches[0].clientY - 20) + 'px';
+        ghost.style.width = rect.width + 'px';
+        document.body.appendChild(ghost);
+        card.classList.add('dragging');
+        if (navigator.vibrate) try { navigator.vibrate(30); } catch(e) {}
+      }, 300);
+    }, { passive: true });
+
+    card.addEventListener('touchmove', e => {
+      if (!touching) return;
+      const dx = Math.abs(e.touches[0].clientX - touchStartX);
+      const dy = Math.abs(e.touches[0].clientY - touchStartY);
+      if (!startedDrag && (dx > 8 || dy > 8)) {
+        clearTimeout(longPressTimer);
+        touching = false;
+        return;
+      }
+      if (startedDrag && ghost) {
+        e.preventDefault();
+        ghost.style.left = (e.touches[0].clientX - ghost.offsetWidth/2) + 'px';
+        ghost.style.top = (e.touches[0].clientY - 20) + 'px';
+        // Find column under finger
+        ghost.style.pointerEvents = 'none';
+        const elBelow = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+        document.querySelectorAll('.column').forEach(c => c.classList.remove('drop-target'));
+        const col = elBelow && elBelow.closest('.column');
+        if (col) col.classList.add('drop-target');
+      }
+    }, { passive: false });
+
+    card.addEventListener('touchend', e => {
+      clearTimeout(longPressTimer);
+      if (!touching) return;
+      touching = false;
+      if (startedDrag && ghost) {
+        const lastTouch = e.changedTouches[0];
+        const elBelow = document.elementFromPoint(lastTouch.clientX, lastTouch.clientY);
+        const col = elBelow && elBelow.closest('.column');
+        ghost.remove();
+        ghost = null;
+        card.classList.remove('dragging');
+        document.querySelectorAll('.column').forEach(c => c.classList.remove('drop-target'));
+        if (col) {
+          const newStatus = col.dataset.status;
+          const c = board.cards.find(x => x.id === card.dataset.id);
+          if (c && c.status !== newStatus) {
+            c.status = newStatus;
+            saveBoard();
+            renderBoard();
+            playTone(660, 0.06);
+            if (newStatus === 'done') {
+              setTimeout(launchConfetti, 100);
+            }
+          }
+        }
+      }
+    });
+  });
+
+  document.querySelectorAll('#boardView .column').forEach(col => {
+    col.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      col.classList.add('drop-target');
+    });
+    col.addEventListener('dragleave', e => {
+      if (e.target === col) col.classList.remove('drop-target');
+    });
+    col.addEventListener('drop', e => {
+      e.preventDefault();
+      col.classList.remove('drop-target');
+      const id = e.dataTransfer.getData('text/plain');
+      const newStatus = col.dataset.status;
+      const c = board.cards.find(x => x.id === id);
+      if (c && c.status !== newStatus) {
+        c.status = newStatus;
+        saveBoard();
+        renderBoard();
+        playTone(660, 0.06);
+        if (newStatus === 'done') setTimeout(launchConfetti, 100);
+      }
+    });
+  });
+};
+
+/* ===== SPARKS ===== */
+let selectedSparkTag = 'idea';
+document.querySelectorAll('.spark-tag-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.spark-tag-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    selectedSparkTag = b.dataset.sparkTag;
+  });
+});
+
+document.getElementById('sparkSaveBtn').addEventListener('click', saveSparkInput);
+document.getElementById('sparkInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault();
+    saveSparkInput();
+  }
+});
+
+function saveSparkInput() {
+  const input = document.getElementById('sparkInput');
+  const text = input.value.trim();
+  if (!text) return;
+  sparks.unshift({
+    id: Math.random().toString(36).slice(2,9),
+    text,
+    tag: selectedSparkTag,
+    created: Date.now(),
+  });
+  saveSparks();
+  input.value = '';
+  renderSparks();
+  playTone(740, 0.08);
+}
+
+const renderSparks = () => {
+  const feed = document.getElementById('sparksFeed');
+  feed.innerHTML = '';
+  if (!sparks.length) {
+    feed.innerHTML = `
+      <div class="sparks-empty">
+        <span class="big-spark">✦</span>
+        nothing caught yet.<br/>
+        the first idea is waiting.
+      </div>
+    `;
+    return;
+  }
+  // Group by day
+  const groups = {};
+  sparks.forEach(s => {
+    const k = dateKey(new Date(s.created));
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(s);
+  });
+  const keys = Object.keys(groups).sort((a,b) => b.localeCompare(a));
+  keys.forEach(k => {
+    const d = parseKey(k);
+    const isToday = k === todayKey();
+    const dateStr = isToday ? 'Today' : d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+    const label = document.createElement('div');
+    label.style.cssText = 'font-family:Fraunces,serif;font-style:italic;font-size:14px;color:var(--ink-soft);margin:18px 0 12px;letter-spacing:.02em;';
+    label.textContent = dateStr;
+    feed.appendChild(label);
+    groups[k].forEach((s, i) => {
+      const div = renderSpark(s);
+      div.style.animationDelay = (i * 40) + 'ms';
+      feed.appendChild(div);
+    });
+  });
+};
+
+const renderSpark = (s) => {
+  const div = document.createElement('div');
+  div.className = 'spark';
+  div.dataset.id = s.id;
+  const t = new Date(s.created);
+  const timeStr = t.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  const safe = document.createElement('span');
+  safe.textContent = s.text;
+  div.innerHTML = `
+    <div class="spark-text">${safe.innerHTML}</div>
+    <div class="spark-meta">
+      <span>${timeStr}</span>
+      <span class="spark-tag-badge ${s.tag}">${s.tag}</span>
+    </div>
+    <div class="spark-actions">
+      <button class="spark-action promote">↗ promote to board</button>
+      <button class="spark-action delete">× delete</button>
+    </div>
+  `;
+  div.querySelector('.promote').onclick = () => promoteSpark(s);
+  div.querySelector('.delete').onclick = () => deleteSpark(s);
+  return div;
+};
+
+const promoteSpark = (s) => {
+  // Drop a card on the board, todo column, "someday" horizon by default
+  board.cards.push({
+    id: Math.random().toString(36).slice(2,9),
+    text: s.text,
+    status: 'todo',
+    horizon: 'someday',
+    note: 'from a spark · ' + s.tag,
+    created: Date.now(),
+    order: Date.now(),
+  });
+  saveBoard();
+  // Remove from sparks
+  sparks = sparks.filter(x => x.id !== s.id);
+  saveSparks();
+  const el = document.querySelector(`.spark[data-id="${s.id}"]`);
+  if (el) el.classList.add('removing');
+  setTimeout(() => {
+    renderSparks();
+    showToast('Promoted to board · Someday', () => {
+      // Undo: restore spark, remove from board
+      sparks.unshift(s);
+      board.cards.pop();
+      saveSparks(); saveBoard();
+      renderSparks();
+    });
+  }, 350);
+};
+
+const deleteSpark = (s) => {
+  const el = document.querySelector(`.spark[data-id="${s.id}"]`);
+  if (el) el.classList.add('removing');
+  const backup = JSON.parse(JSON.stringify(sparks));
+  setTimeout(() => {
+    sparks = sparks.filter(x => x.id !== s.id);
+    saveSparks();
+    renderSparks();
+    showToast('Spark removed', () => {
+      sparks = backup;
+      saveSparks();
+      renderSparks();
+    });
+  }, 320);
+};
+
 /* ===== TABS ===== */
 let activeView = 'today';
 document.querySelectorAll('.tab').forEach(tab => {
@@ -2585,11 +3522,14 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     activeView = tab.dataset.view;
-    ['today','calendar','focus','stats','settings'].forEach(v => {
-      document.getElementById(v + 'View').style.display = (v === activeView) ? '' : 'none';
+    ['today','board','sparks','calendar','focus','stats','settings'].forEach(v => {
+      const el = document.getElementById(v + 'View');
+      if (el) el.style.display = (v === activeView) ? '' : 'none';
     });
     try {
       if (activeView === 'today') renderToday();
+      if (activeView === 'board') renderBoard();
+      if (activeView === 'sparks') renderSparks();
       if (activeView === 'calendar') renderCalendar();
       if (activeView === 'focus') { updateFocusUI(); renderFocusTaskList(); }
       if (activeView === 'stats') renderStats();
@@ -2615,9 +3555,11 @@ document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === '/') { e.preventDefault(); document.getElementById('searchBtn').click(); }
   if (e.key === '1') document.querySelector('.tab[data-view="today"]').click();
-  if (e.key === '2') document.querySelector('.tab[data-view="calendar"]').click();
-  if (e.key === '3') document.querySelector('.tab[data-view="focus"]').click();
-  if (e.key === '4') document.querySelector('.tab[data-view="stats"]').click();
+  if (e.key === '2') document.querySelector('.tab[data-view="board"]').click();
+  if (e.key === '3') document.querySelector('.tab[data-view="sparks"]').click();
+  if (e.key === '4') document.querySelector('.tab[data-view="calendar"]').click();
+  if (e.key === '5') document.querySelector('.tab[data-view="focus"]').click();
+  if (e.key === '6') document.querySelector('.tab[data-view="stats"]').click();
 });
 
 /* ===== INIT ===== */
