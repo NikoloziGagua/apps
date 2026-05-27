@@ -1174,6 +1174,133 @@
     border-radius: 16px 16px 0 0;
   }
 
+  /* ============================================
+     DESKTOP / LAPTOP LAYOUT (>=900px)
+     The app was designed mobile-first. On larger
+     screens we widen the container and re-flow
+     specific views to take advantage of width.
+     ============================================ */
+  @media (min-width: 900px) {
+    body {
+      max-width: 1100px;
+      padding: 36px 48px 100px;
+    }
+
+    /* Header gets a bit larger and the streak meta
+       moves to a side panel position */
+    h1 { font-size: 56px; }
+    .date-line { font-size: 16px; }
+    .greeting { font-size: 17px; }
+    .quote { font-size: 15px; max-width: 60%; }
+
+    /* Tabs — slightly larger, more breathing room */
+    nav.tabs { margin-bottom: 32px; }
+    .tab { font-size: 13px; padding: 16px 0; margin-right: 32px; }
+
+    /* TODAY: two columns side by side instead of stacked */
+    #todayView .section {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    #todayView {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 48px;
+      row-gap: 0;
+    }
+    #todayView > .search-bar,
+    #todayView > .search-results,
+    #todayView > .filter-row,
+    #todayView > .input-hint {
+      grid-column: 1 / -1;
+    }
+    /* First section (Work) left, second (Life) right */
+    #todayView > .section:nth-of-type(1) { grid-column: 1; }
+    #todayView > .section:nth-of-type(2) { grid-column: 2; }
+
+    /* BOARD: show all 3 columns side by side, no scroll */
+    .board-columns {
+      margin: 0;
+      padding: 0 0 24px 0;
+      overflow: visible;
+      gap: 20px;
+    }
+    .column {
+      flex: 1;
+      max-width: none;
+      min-height: 500px;
+    }
+    .column-hint { display: none; } /* no swipe needed on desktop */
+    .card { cursor: grab; }
+    .card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px -6px rgba(0,0,0,.15); }
+
+    /* CALENDAR: wider grid with more visible content per cell */
+    .cal-day .day-num { font-size: 16px; }
+    .heatmap { padding: 16px; }
+    .heatmap-cell { min-width: 10px; }
+
+    /* STATS: 4-column grid for the stat cards instead of 2 */
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .stat-card { padding: 22px 18px; }
+    .stat-value { font-size: 42px; }
+    .chart-bars { height: 120px; }
+
+    /* SPARKS: capture sits next to the feed instead of above */
+    #sparksView {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+    #sparksView > .sparks-intro,
+    #sparksView > .spark-capture {
+      grid-column: 1;
+    }
+    #sparksView > .sparks-intro { margin-bottom: 16px; }
+    #sparksView > .spark-capture {
+      position: sticky; top: 24px;
+      margin-bottom: 0;
+    }
+    #sparksView > .sparks-feed {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+    .spark-capture textarea { min-height: 100px; }
+
+    /* FOCUS: timer larger, controls roomier */
+    .focus-view { padding: 60px 0 40px; }
+    .focus-timer { font-size: 120px; }
+    .focus-task { font-size: 26px; }
+    .focus-task-pick { max-width: 600px; margin-left: auto; margin-right: auto; }
+
+    /* SETTINGS: cap reading width so lines aren't too long */
+    #settingsView { max-width: 720px; }
+
+    /* Modals stay centered, not bottom-stuck */
+    .modal-backdrop.open { align-items: center; }
+    .modal {
+      border-radius: 16px;
+      max-width: 540px;
+      max-height: 80vh;
+      box-shadow: 0 24px 60px -20px rgba(0,0,0,.4);
+    }
+    .modal-handle { display: none; }
+
+    /* FAB moves a bit further from edge */
+    .fab { bottom: 32px; right: 32px; }
+
+    /* Slightly larger inputs for keyboard comfort */
+    input.task-input { font-size: 17px; }
+  }
+
+  /* Extra-wide screens (>=1280px) — give content even more room */
+  @media (min-width: 1280px) {
+    body { max-width: 1240px; }
+    .column { padding: 18px; }
+  }
+
 </style>
 </head>
 <body>
